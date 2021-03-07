@@ -82,6 +82,9 @@ public class WorldManager {
         if (world != null) {
             world.setAutoSave(false);
             Bukkit.unloadWorld(world, false);
+            for (Chunk chunk : world.getLoadedChunks()){
+                chunk.unload(false);
+            }
         }
         new BukkitRunnable() {
             @Override

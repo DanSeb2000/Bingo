@@ -41,6 +41,7 @@ public class Core extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(instance);
             return;
         }
+        saveDefaultConfig();
         this.gameManager = new GameManager();
         this.worldManager = new WorldManager();
         this.pluginUtils = new PluginUtils();

@@ -1,36 +1,36 @@
 package me.danseb.bingo.events;
 
 import me.danseb.bingo.Core;
+import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
-import org.bukkit.Location;
+import me.danseb.bingo.game.Teams;
+import me.danseb.bingo.world.WorldManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.HashMap;
-import java.util.UUID;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class GameEvents implements Listener {
-    public HashMap<UUID, Location> playerLoc = new HashMap<>();
+    private final GameManager gameManager;
+    private final WorldManager worldManager;
+
+    public GameEvents(){
+        gameManager = Core.getInstance().getGameManager();
+        worldManager = Core.getInstance().getWorldManager();
+    }
 
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event){
-        GameState gs = Core.getInstance().getGameManager().getGameState();
-        System.out.println(gs);
+        GameState gs = gameManager.getGameState();
         switch (gs){
             case LOADING:
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game still loading.");
-                break;
-            case WAITING:
-            case STARTING:
-            case PLAYING:
-                event.allow();
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game still loading");
                 break;
             case ENDING:
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game ending.");
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game ending");
                 break;
         }
     }
@@ -39,10 +39,10 @@ public class GameEvents implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         event.setJoinMessage(null);
         Player player = event.getPlayer();
-        switch (Core.getInstance().getGameManager().getGameState()) {
+        switch (gameManager.getGameState()) {
             case WAITING:
-                player.teleport(Core.getInstance().getWorldManager().getSPAWN());
-                Core.getInstance().getGameManager().getTeams().put(player.getUniqueId(), "NONE");
+                player.teleport(worldManager.getSPAWN());
+                gameManager.setPlayerTeam(player, Teams.NONE);
                 break;
             case PLAYING:
                 break;
@@ -54,4 +54,16 @@ public class GameEvents implements Listener {
         event.setQuitMessage(null);
     }
 
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event){
+        switch (gameManager.getGameState()){
+            case PLAYING:
+            case ENDING:
+                event.setRespawnLocation(gameManager.playerLoc.get(event.getPlayer().getUniqueId()));
+                break;
+            default:
+                event.setRespawnLocation(worldManager.getSPAWN());
+                break;
+        }
+    }
 }

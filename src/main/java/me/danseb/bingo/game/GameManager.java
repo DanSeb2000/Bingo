@@ -17,25 +17,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
 public class GameManager implements Listener {
 
     private GameState gameState;
     private GameManager gameManager;
+    public HashMap<UUID, Location> playerLoc = new HashMap<>();
     private HashMap<UUID, Set<GameItems>> gottenItems = new HashMap<>();
     private HashMap<UUID, int[]> rowsCompleted = new HashMap<>();
     private HashMap<UUID, int[]> filesCompleted = new HashMap<>();
-    private HashMap<UUID, String> teams = new HashMap<>();
-    private Set<UUID> red = new HashSet<>();
-    private Set<UUID> blue = new HashSet<>();
-    private Set<UUID> yellow = new HashSet<>();
-    private Set<UUID> green = new HashSet<>();
-    private Set<UUID> spec = new HashSet<>();
-    private Location RED_LOCATION;
-    private Location BLUE_LOCATION;
-    private Location YELLOW_LOCATION;
-    private Location GREEN_LOCATION;
+    private HashMap<Teams, Set<UUID>> teams = new HashMap<>();
+    private HashMap<Teams, Location> teamsLocation = new HashMap<>();
     private long startTime;
 
     public GameManager() {
@@ -66,57 +60,36 @@ public class GameManager implements Listener {
 
     public void preStartGame() {
         setGameState(GameState.STARTING);
-        this.RED_LOCATION = TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER());
-        this.BLUE_LOCATION = TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER());
-        this.GREEN_LOCATION = TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER());
-        this.YELLOW_LOCATION = TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER());
+        this.teamsLocation.put(Teams.RED, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
+                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
+        this.teamsLocation.put(Teams.BLUE, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
+                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
+        this.teamsLocation.put(Teams.GREEN, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
+                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
+        this.teamsLocation.put(Teams.YELLOW, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
+                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
 
         int ii = new Random().nextInt(3)+1;
         for (Player player : Bukkit.getOnlinePlayers()){
-            if (!teams.containsKey(player.getUniqueId()) || teams.get(player.getUniqueId()).equals("NONE")){
+            if (getPlayerTeam(player.getUniqueId()).equals(Teams.NONE)){
                 switch (ii){
                     case 1:
-                        setPlayerTeam(player, "RED");
+                        setPlayerTeam(player, Teams.RED);
                         ii++;
                         break;
                     case 2:
-                        setPlayerTeam(player, "BLUE");
+                        setPlayerTeam(player, Teams.BLUE);
                         ii++;
                         break;
                     case 3:
-                        setPlayerTeam(player, "YELLOW");
+                        setPlayerTeam(player, Teams.GREEN);
                         ii++;
                         break;
                     case 4:
-                        setPlayerTeam(player, "GREEN");
+                        setPlayerTeam(player, Teams.YELLOW);
                         ii = 1;
                         break;
                 }
-            }
-        }
-
-        for (UUID uuid : teams.keySet()) {
-            String team = getPlayerTeam(uuid);
-            switch (team) {
-                case "RED":
-                    red.add(uuid);
-                    break;
-                case "BLUE":
-                    blue.add(uuid);
-                    break;
-                case "YELLOW":
-                    yellow.add(uuid);
-                    break;
-                case "GREEN":
-                    green.add(uuid);
-                    break;
-                case "NONE":
-                    spec.add(uuid);
-                    break;
             }
         }
 
@@ -128,23 +101,35 @@ public class GameManager implements Listener {
             public void run() {
                 if (i == 5) {
                     Bukkit.broadcastMessage("Teleporting red team to a new location...");
-                    for (UUID uuid : red) {
-                        Bukkit.getPlayer(uuid).teleport(RED_LOCATION);
+                    if (teams.containsKey(Teams.RED)){
+                        for (UUID uuid : teams.get(Teams.RED)) {
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.RED));
+                            playerLoc.put(uuid, teamsLocation.get(Teams.RED));
+                        }
                     }
                 } else if (i == 10) {
                     Bukkit.broadcastMessage("Teleporting blue team to a new location...");
-                    for (UUID uuid : blue) {
-                        Bukkit.getPlayer(uuid).teleport(BLUE_LOCATION);
+                    if (teams.containsKey(Teams.BLUE)) {
+                        for (UUID uuid : teams.get(Teams.BLUE)) {
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.BLUE));
+                            playerLoc.put(uuid, teamsLocation.get(Teams.BLUE));
+                        }
                     }
                 } else if (i == 15) {
                     Bukkit.broadcastMessage("Teleporting yellow team to a new location...");
-                    for (UUID uuid : yellow) {
-                        Bukkit.getPlayer(uuid).teleport(YELLOW_LOCATION);
+                    if (teams.containsKey(Teams.YELLOW)) {
+                        for (UUID uuid : teams.get(Teams.YELLOW)) {
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.YELLOW));
+                            playerLoc.put(uuid, teamsLocation.get(Teams.YELLOW));
+                        }
                     }
                 } else if (i == 20) {
                     Bukkit.broadcastMessage("Teleporting green team to a new location...");
-                    for (UUID uuid : green) {
-                        Bukkit.getPlayer(uuid).teleport(GREEN_LOCATION);
+                    if (teams.containsKey(Teams.GREEN)) {
+                        for (UUID uuid : teams.get(Teams.GREEN)) {
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.GREEN));
+                            playerLoc.put(uuid, teamsLocation.get(Teams.GREEN));
+                        }
                     }
                 }
 
@@ -186,33 +171,23 @@ public class GameManager implements Listener {
     }
 
 
-    public String getPlayerTeam(UUID uuid) {
-        return teams.get(uuid);
+    public Teams getPlayerTeam(UUID uuid) {
+        AtomicReference<Teams> playerTeam = new AtomicReference<>(Teams.NONE);
+        teams.forEach((team, uuids) -> {
+            if(uuids.contains(uuid)) {
+                playerTeam.set(team);
+            }
+        });
+        return playerTeam.get();
     }
 
-    public boolean setPlayerTeam(Player player, String team) {
-        switch (team) {
-            case "RED":
-            case "BLUE":
-            case "YELLOW":
-            case "GREEN":
-                if (teams.containsKey(player.getUniqueId())) {
-                    teams.replace(player.getUniqueId(), team);
-                } else {
-                    teams.put(player.getUniqueId(), team);
-                }
-                return true;
-            default:
-                return false;
-        }
+    public boolean setPlayerTeam(Player player, Teams team) {
+        return teams.computeIfAbsent(team, teams1 -> new HashSet<>()).add(player.getUniqueId());
     }
 
     public void playerGotItem(Player player){
-        Bukkit.broadcastMessage("entered playerGotItem()");
         Set<GameItems> items = getGottenItems().get(player.getUniqueId());
-
         GameItems[][] bingoItems = new GameItems[5][5];
-
         List<List<GameItems>> gameItems = Lists.partition(BingoManager.GAME_ITEMS, 5);
 
         for (int i = 0; i < gameItems.size(); i++){
@@ -255,9 +230,6 @@ public class GameManager implements Listener {
                     row[i]++;
                 }
         }
-
-        Bukkit.broadcastMessage(row[0] +" - "+ row[1] +" - "+ row[2] +" - "+ row[3] +" - "+ row[4]);
-
         return row;
     }
 
@@ -270,9 +242,6 @@ public class GameManager implements Listener {
                     files[i]++;
                 }
         }
-
-        Bukkit.broadcastMessage(files[0] +" - "+ files[1] +" - "+ files[2] +" - "+ files[3] +" - "+ files[4]);
-
         return files;
     }
 }
