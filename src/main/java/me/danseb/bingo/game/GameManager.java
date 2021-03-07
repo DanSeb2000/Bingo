@@ -77,7 +77,7 @@ public class GameManager implements Listener {
         this.YELLOW_LOCATION = TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
                 Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER());
 
-        int ii = 1;
+        int ii = new Random().nextInt(3)+1;
         for (Player player : Bukkit.getOnlinePlayers()){
             if (!teams.containsKey(player.getUniqueId())){
                 switch (ii){
