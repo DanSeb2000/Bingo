@@ -79,7 +79,7 @@ public class GameManager implements Listener {
 
         int ii = new Random().nextInt(3)+1;
         for (Player player : Bukkit.getOnlinePlayers()){
-            if (!teams.containsKey(player.getUniqueId())){
+            if (!teams.containsKey(player.getUniqueId()) || teams.get(player.getUniqueId()).equals("NONE")){
                 switch (ii){
                     case 1:
                         setPlayerTeam(player, "RED");
