@@ -1,0 +1,16 @@
+name: bingo
+version: @version@
+main: me.danseb.bingo.Core
+api-version: 1.16
+authors: [DanSeb2000]
+description: Bingo!
+commands:
+  bingo:
+    usage: /bingo
+    description: Open the bingo board
+  start:
+    usage: /start
+    description: Starts the game
+  team:
+    usage: /team
+    description: Join a team
