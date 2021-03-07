@@ -4,19 +4,18 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.NonNull;
 import me.danseb.bingo.Core;
+import me.danseb.bingo.game.schedulers.EndingScheduler;
 import me.danseb.bingo.game.schedulers.InventoryScheduler;
 import me.danseb.bingo.game.schedulers.TimeScheduler;
 import me.danseb.bingo.utils.PluginUtils;
 import me.danseb.bingo.utils.TeleportUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
 import java.util.*;
 
 @Getter
@@ -55,7 +54,6 @@ public class GameManager implements Listener {
 
     public void newGame() {
         setGameState(GameState.LOADING);
-        deleteOldStats();
         Core.getInstance().getWorldManager().createNewMap();
         preGame();
     }
@@ -170,42 +168,23 @@ public class GameManager implements Listener {
         new TimeScheduler();
     }
 
-    public void endGame() {
+    public void endGame(String winner) {
         setGameState(GameState.ENDING);
+        switch (winner){
+            case "RED":
+            case "BLUE":
+            case "GREEN":
+            case "YELLOW":
+                Bukkit.broadcastMessage("The winner team is "+ winner);
+                break;
+            default:
+                Bukkit.broadcastMessage("The game has ended with no winners");
+                break;
+        }
+
+        new EndingScheduler();
     }
 
-    private void deleteOldStats() {
-        for (World world : Bukkit.getServer().getWorlds()) {
-            File playerdata = new File(world.getName() + "/playerdata");
-            if (playerdata.exists() && playerdata.isDirectory() && playerdata.listFiles() != null)
-                for (File playerFile : playerdata.listFiles())
-                    playerFile.delete();
-            File stats = new File(world.getName() + "/stats");
-            if (stats.exists() && stats.isDirectory() && playerdata.listFiles() != null)
-                for (File statFile : stats.listFiles())
-                    statFile.delete();
-            File advancements = new File(world.getName() + "/advancements");
-            if (advancements.exists() && advancements.isDirectory() && playerdata.listFiles() != null)
-                for (File advancementFile : advancements.listFiles())
-                    advancementFile.delete();
-        }
-    }
-
-    /*private void deleteWorldFiles(){
-        World world = Bukkit.getWorld(Objects.requireNonNull(Core.getInstance().getConfig().getString("game-world", "world")));
-        if (world != null) {
-            world.setAutoSave(false);
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.kickPlayer("Restarting");
-            }
-            Bukkit.unloadWorld(world, false);
-        }
-        try {
-            FileUtils.deleteDirectory(new File(Core.getInstance().getServer().getWorldContainer() + File.separator + Core.getInstance().getConfig().getString("game-world", "world")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public String getPlayerTeam(UUID uuid) {
         return teams.get(uuid);

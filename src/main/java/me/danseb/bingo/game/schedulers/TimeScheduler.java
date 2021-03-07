@@ -17,6 +17,8 @@ public class TimeScheduler extends BukkitRunnable {
             //p.setScoreboard(Core.getInstance().getPluginUtils().setScoreboard());
             String time = Core.getInstance().getPluginUtils().getCurrentTime();
             p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(time));
+            if (time.equals("25:00"))
+                Core.getInstance().getGameManager().endGame("");
         }
     }
 

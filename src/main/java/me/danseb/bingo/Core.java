@@ -59,7 +59,6 @@ public class Core extends JavaPlugin {
             return;
         }
         PluginUtils.sendLog("Info", "Disabling Bingo!");
-        worldManager.deleteMap();
         PluginUtils.sendLog("Info", "Bingo! succefully disabled.");
     }
 

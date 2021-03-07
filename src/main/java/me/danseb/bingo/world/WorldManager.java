@@ -1,10 +1,14 @@
 package me.danseb.bingo.world;
 
 import lombok.Getter;
+import me.danseb.bingo.Core;
 import me.danseb.bingo.utils.PluginUtils;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
 
@@ -16,6 +20,8 @@ public class WorldManager {
     private final int BORDER = 1000;
 
     public void createNewMap(){
+        deleteOldStats();
+
         PluginUtils.sendLog("Info", "Creating map: ("+ MAP_ID +")");
         String settings = "{\"coordinateScale\":684.412,\"heightScale\":684.412,\"lowerLimitScale\":512.0," +
                 "\"upperLimitScale\":512.0,\"depthNoiseScaleX\":200.0,\"depthNoiseScaleZ\":200.0," +
@@ -54,14 +60,39 @@ public class WorldManager {
         PluginUtils.sendLog("Info", "Map created.");
     }
 
-    public void deleteMap() {
-        File worldDir = new File(MAP_ID);
-        if (worldDir.exists()) {
-            PluginUtils.sendLog("Info", "Deleting world...");
-            PluginUtils.deleteFile(worldDir);
-        } else {
-            PluginUtils.sendLog("Warn", "Coudn't delete world ("+ MAP_ID +"). File not found.");
+    private void deleteOldStats() {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            File playerdata = new File(world.getName() + "/playerdata");
+            if (playerdata.exists() && playerdata.isDirectory() && playerdata.listFiles() != null)
+                for (File playerFile : playerdata.listFiles())
+                    playerFile.delete();
+            File stats = new File(world.getName() + "/stats");
+            if (stats.exists() && stats.isDirectory() && playerdata.listFiles() != null)
+                for (File statFile : stats.listFiles())
+                    statFile.delete();
+            File advancements = new File(world.getName() + "/advancements");
+            if (advancements.exists() && advancements.isDirectory() && playerdata.listFiles() != null)
+                for (File advancementFile : advancements.listFiles())
+                    advancementFile.delete();
         }
     }
 
+    public void deleteWorldFiles(){
+        World world = Bukkit.getWorld(Core.getInstance().getWorldManager().getMAP_ID());
+        if (world != null) {
+            world.setAutoSave(false);
+            Bukkit.unloadWorld(world, false);
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    FileUtils.deleteDirectory(new File(Core.getInstance().getServer().getWorldContainer()
+                            + File.separator + Core.getInstance().getWorldManager().getMAP_ID()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskLaterAsynchronously(Core.getInstance(), 3L);
+    }
 }
