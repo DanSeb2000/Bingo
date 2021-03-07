@@ -4,6 +4,7 @@ import me.danseb.bingo.Core;
 import me.danseb.bingo.game.BingoManager;
 import me.danseb.bingo.game.GameItems;
 import me.danseb.bingo.game.GameManager;
+import me.danseb.bingo.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,9 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class InventoryScheduler extends BukkitRunnable {
+    GameManager gameManager = Core.getInstance().getGameManager();
     @Override
     public void run() {
-        GameManager gameManager = Core.getInstance().getGameManager();
+
+        if (gameManager.getGameState() == GameState.ENDING)
+            cancel();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             Inventory inventory = player.getInventory();
@@ -32,6 +36,7 @@ public class InventoryScheduler extends BukkitRunnable {
                             items.add(gameItem);
                             gameManager.getGottenItems().put(player.getUniqueId(), items);
                             gameManager.playerGotItem(player);
+                            item.setAmount(item.getAmount()-1);
                         }
                     }
                 }

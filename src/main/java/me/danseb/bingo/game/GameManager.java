@@ -191,6 +191,22 @@ public class GameManager implements Listener {
         }
     }
 
+    /*private void deleteWorldFiles(){
+        World world = Bukkit.getWorld(Objects.requireNonNull(Core.getInstance().getConfig().getString("game-world", "world")));
+        if (world != null) {
+            world.setAutoSave(false);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.kickPlayer("Restarting");
+            }
+            Bukkit.unloadWorld(world, false);
+        }
+        try {
+            FileUtils.deleteDirectory(new File(Core.getInstance().getServer().getWorldContainer() + File.separator + Core.getInstance().getConfig().getString("game-world", "world")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
     public String getPlayerTeam(UUID uuid) {
         return teams.get(uuid);
     }
