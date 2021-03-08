@@ -13,12 +13,12 @@ public class EndingScheduler extends BukkitRunnable {
         if (!Core.getInstance().getGameManager().getGameState().equals(GameState.ENDING))
             cancel();
 
-        if (i == 10){
+        if (i == 15){
             for (Player player : Bukkit.getOnlinePlayers())
                 player.kickPlayer("Game Ending");
-        } else if (i == 15){
-            Core.getInstance().getWorldManager().deleteWorldFiles();
         } else if (i == 20){
+            Core.getInstance().getWorldManager().deleteWorldFiles();
+        } else if (i == 25){
             Bukkit.shutdown();
             cancel();
         }

@@ -4,7 +4,6 @@ import jdk.internal.jline.internal.Nullable;
 import me.danseb.bingo.Core;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 public enum UniversalMaterial {
@@ -249,7 +248,7 @@ public enum UniversalMaterial {
         return false;
     }
 
-    public boolean equals(Block block) {
+    /*public boolean equals(Block block) {
         return (block.getType() == getType() && block.getData() == this.id8);
-    }
+    }*/
 }

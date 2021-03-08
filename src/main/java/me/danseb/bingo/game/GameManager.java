@@ -10,8 +10,8 @@ import me.danseb.bingo.game.schedulers.TimeScheduler;
 import me.danseb.bingo.utils.PluginUtils;
 import me.danseb.bingo.utils.TeleportUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,12 +25,13 @@ public class GameManager implements Listener {
     private GameState gameState;
     private GameManager gameManager;
     public HashMap<UUID, Location> playerLoc = new HashMap<>();
-    private HashMap<UUID, Set<GameItems>> gottenItems = new HashMap<>();
-    private HashMap<UUID, int[]> rowsCompleted = new HashMap<>();
-    private HashMap<UUID, int[]> filesCompleted = new HashMap<>();
+    private HashMap<Teams, Set<GameItems>> gottenItems = new HashMap<>();
+    private HashMap<Teams, int[]> rowsCompleted = new HashMap<>();
+    private HashMap<Teams, int[]> filesCompleted = new HashMap<>();
     private HashMap<Teams, Set<UUID>> teams = new HashMap<>();
     private HashMap<Teams, Location> teamsLocation = new HashMap<>();
     private long startTime;
+    private boolean oneLineWin = true;
 
     public GameManager() {
         gameManager = this;
@@ -93,14 +94,14 @@ public class GameManager implements Listener {
             }
         }
 
-        Bukkit.broadcastMessage("Starting...");
+        Bukkit.broadcastMessage("§fStarting...");
         new BukkitRunnable() {
             int i = 0;
 
             @Override
             public void run() {
                 if (i == 5) {
-                    Bukkit.broadcastMessage("Teleporting red team to a new location...");
+                    Bukkit.broadcastMessage("§fTeleporting red team to a new location...");
                     if (teams.containsKey(Teams.RED)){
                         for (UUID uuid : teams.get(Teams.RED)) {
                             Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.RED));
@@ -108,7 +109,7 @@ public class GameManager implements Listener {
                         }
                     }
                 } else if (i == 10) {
-                    Bukkit.broadcastMessage("Teleporting blue team to a new location...");
+                    Bukkit.broadcastMessage("§fTeleporting blue team to a new location...");
                     if (teams.containsKey(Teams.BLUE)) {
                         for (UUID uuid : teams.get(Teams.BLUE)) {
                             Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.BLUE));
@@ -116,7 +117,7 @@ public class GameManager implements Listener {
                         }
                     }
                 } else if (i == 15) {
-                    Bukkit.broadcastMessage("Teleporting yellow team to a new location...");
+                    Bukkit.broadcastMessage("§fTeleporting yellow team to a new location...");
                     if (teams.containsKey(Teams.YELLOW)) {
                         for (UUID uuid : teams.get(Teams.YELLOW)) {
                             Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.YELLOW));
@@ -124,7 +125,7 @@ public class GameManager implements Listener {
                         }
                     }
                 } else if (i == 20) {
-                    Bukkit.broadcastMessage("Teleporting green team to a new location...");
+                    Bukkit.broadcastMessage("§fTeleporting green team to a new location...");
                     if (teams.containsKey(Teams.GREEN)) {
                         for (UUID uuid : teams.get(Teams.GREEN)) {
                             Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.GREEN));
@@ -134,9 +135,16 @@ public class GameManager implements Listener {
                 }
 
                 if (i > 25 && i < 30) {
-                    Bukkit.broadcastMessage("Starting in " + (30 - i) + " second(s)");
+                    Bukkit.broadcastMessage("§fStarting in " + (30 - i) + " second(s)");
                 } else if (i == 30) {
-                    Bukkit.broadcastMessage("Starting now!");
+                    Bukkit.broadcastMessage("§fStarting now!");
+                    if (teams.containsKey(Teams.SPEC)) {
+                        for (UUID uuid : teams.get(Teams.SPEC)) {
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.SPEC));
+                            Bukkit.getPlayer(uuid).setGameMode(GameMode.SPECTATOR);
+                            playerLoc.put(uuid, teamsLocation.get(Teams.SPEC));
+                        }
+                    }
                     startGame();
                     cancel();
                 }
@@ -153,17 +161,17 @@ public class GameManager implements Listener {
         new TimeScheduler();
     }
 
-    public void endGame(String winner) {
+    public void endGame(Teams winner) {
         setGameState(GameState.ENDING);
         switch (winner){
-            case "RED":
-            case "BLUE":
-            case "GREEN":
-            case "YELLOW":
-                Bukkit.broadcastMessage("The winner team is "+ winner);
+            case RED:
+            case BLUE:
+            case GREEN:
+            case YELLOW:
+                Bukkit.broadcastMessage("§fThe "+ winner.getTeamName() +"§f team won the game!");
                 break;
             default:
-                Bukkit.broadcastMessage("The game has ended with no winners");
+                Bukkit.broadcastMessage("§fThe game has ended with no winners");
                 break;
         }
 
@@ -185,8 +193,8 @@ public class GameManager implements Listener {
         return teams.computeIfAbsent(team, teams1 -> new HashSet<>()).add(player.getUniqueId());
     }
 
-    public void playerGotItem(Player player){
-        Set<GameItems> items = getGottenItems().get(player.getUniqueId());
+    public void teamGotItem(Teams team){
+        Set<GameItems> items = getGottenItems().get(team);
         GameItems[][] bingoItems = new GameItems[5][5];
         List<List<GameItems>> gameItems = Lists.partition(BingoManager.GAME_ITEMS, 5);
 
@@ -197,48 +205,54 @@ public class GameManager implements Listener {
         }
 
         int[] rows = checkBingoHorizontalLines(items, bingoItems);
-        if (!rowsCompleted.containsKey(player.getUniqueId()))
-            rowsCompleted.put(player.getUniqueId(), new int[]{0, 0, 0, 0, 0});
+        if (!rowsCompleted.containsKey(team))
+            rowsCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
         for (int i = 0; i < 5; i++){
-            if (rows[i] == 5 && rowsCompleted.get(player.getUniqueId())[i] != 5){
-                Bukkit.broadcastMessage("The player " + player.getName() + " completed a row!");
-                player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
-                rowsCompleted.put(player.getUniqueId(), rows);
+            if (rows[i] == 5 && rowsCompleted.get(team)[i] != 5){
+                Bukkit.broadcastMessage("§fThe " + team.getTeamName() + "§f team completed a row!");
+                //team.getLocation().getWorld().spawnEntity(team, EntityType.FIREWORK);
+                rowsCompleted.put(team, rows);
+                if (oneLineWin){
+                    endGame(team);
+                }
             }
         }
 
         int[] files = checkBingoVerticalLines(items, bingoItems);
-        if (!filesCompleted.containsKey(player.getUniqueId()))
-            filesCompleted.put(player.getUniqueId(), new int[]{0, 0, 0, 0, 0});
+        if (!filesCompleted.containsKey(team))
+            filesCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
         for (int i = 0; i < 5; i++){
-            if (files[i] == 5 && filesCompleted.get(player.getUniqueId())[i] != 5){
-                Bukkit.broadcastMessage("The player " + player.getName() + " completed a file!");
-                player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
-                filesCompleted.put(player.getUniqueId(), files);
+            if (files[i] == 5 && filesCompleted.get(team)[i] != 5){
+                Bukkit.broadcastMessage("§fThe " + team.getTeamName() + "§f team completed a file!");
+                //team.getLocation().getWorld().spawnEntity(team.getLocation(), EntityType.FIREWORK);
+                filesCompleted.put(team, files);
+                if (oneLineWin){
+                    endGame(team);
+                }
             }
         }
     }
 
-    public int[] checkBingoHorizontalLines(Set<GameItems> playerItems, GameItems[][] gameItems){
+    public int[] checkBingoHorizontalLines(Set<GameItems> teamItems, GameItems[][] gameItems){
         int[] row = {0, 0, 0, 0, 0};
 
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i <= 4; i++){
             for (int x = 0; x <= 4; x++)
-                if (playerItems.contains(gameItems[i][x])){
+                if (teamItems.contains(gameItems[i][x])){
                     row[i]++;
                 }
         }
         return row;
     }
 
-    public int[] checkBingoVerticalLines(Set<GameItems> playerItems, GameItems[][] gameItems){
+    public int[] checkBingoVerticalLines(Set<GameItems> teamItems, GameItems[][] gameItems){
         int[] files = {0, 0, 0, 0, 0};
 
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i <= 4; i++){
             for (int x = 0; x <= 4; x++)
-                if (playerItems.contains(gameItems[x][i])){
+                if (teamItems.contains(gameItems[x][i])){
                     files[i]++;
                 }
         }

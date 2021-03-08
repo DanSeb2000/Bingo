@@ -1,10 +1,7 @@
 package me.danseb.bingo.game.schedulers;
 
 import me.danseb.bingo.Core;
-import me.danseb.bingo.game.BingoManager;
-import me.danseb.bingo.game.GameItems;
-import me.danseb.bingo.game.GameManager;
-import me.danseb.bingo.game.GameState;
+import me.danseb.bingo.game.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -29,13 +26,15 @@ public class InventoryScheduler extends BukkitRunnable {
                 for (GameItems gameItem : BingoManager.GAME_ITEMS) {
                     if (item.getType() == gameItem.getType()) {
                         if (gameItem.isCheckDurability() && item.getDurability() != gameItem.getDurability()) continue;
-                        Set<GameItems> items = gameManager.getGottenItems().computeIfAbsent(player.getUniqueId(),
-                                uuid -> new HashSet<>());
+                        Teams team = gameManager.getPlayerTeam(player.getUniqueId());
+                        Set<GameItems> items = gameManager.getGottenItems().computeIfAbsent(team,
+                                team1 -> new HashSet<>());
                         if (!(items.contains(gameItem))) {
-                            Bukkit.broadcastMessage(player.getName() + " got an item! in "+ Core.getInstance().getPluginUtils().getCurrentTime());
+                            Bukkit.broadcastMessage("The team "+ team.getName() +"§f got an item! in "+ Core.getInstance()
+                                    .getPluginUtils().getCurrentTime());
                             items.add(gameItem);
-                            gameManager.getGottenItems().put(player.getUniqueId(), items);
-                            gameManager.playerGotItem(player);
+                            gameManager.getGottenItems().put(team, items);
+                            gameManager.teamGotItem(team);
                             item.setAmount(item.getAmount()-1);
                         }
                     }

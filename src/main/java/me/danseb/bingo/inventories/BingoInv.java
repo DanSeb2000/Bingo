@@ -7,7 +7,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.danseb.bingo.Core;
 import me.danseb.bingo.game.BingoManager;
 import me.danseb.bingo.game.GameItems;
-import org.bukkit.Bukkit;
+import me.danseb.bingo.game.Teams;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BingoInv implements InventoryProvider {
     public static final SmartInventory BINGO_INV = SmartInventory.builder()
@@ -40,10 +39,10 @@ public class BingoInv implements InventoryProvider {
                 List<String> lore = new ArrayList<>();
                 lore.add(ChatColor.WHITE + "Got by:");
 
-                for (UUID uuid : Core.getInstance().getGameManager().getGottenItems().keySet()) {
-                    for (GameItems itemGot : Core.getInstance().getGameManager().getGottenItems().get(uuid)) {
+                for (Teams team : Core.getInstance().getGameManager().getGottenItems().keySet()) {
+                    for (GameItems itemGot : Core.getInstance().getGameManager().getGottenItems().get(team)) {
                         if (itemGot.equals(item)) {
-                            lore.add(Bukkit.getPlayer(uuid).getName());
+                            lore.add(team.getName());
                         }
                     }
                 }
