@@ -9,13 +9,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.UUID;
 
 @Getter
 public class WorldManager {
     private final String MAP_ID = UUID.randomUUID().toString();
-    private final int SEED = new Random().nextInt();
+    private final int SEED = Core.getInstance().getRandom().nextInt();
     private final Location SPAWN = new Location(Bukkit.getWorld("world"), 0, 100, 0);
     private final int BORDER = 1000;
 

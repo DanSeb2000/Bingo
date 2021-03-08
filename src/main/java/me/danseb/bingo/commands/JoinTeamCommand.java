@@ -3,6 +3,7 @@ package me.danseb.bingo.commands;
 import me.danseb.bingo.Core;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.Teams;
+import me.danseb.bingo.inventories.TeamInv;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,14 @@ public class JoinTeamCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 1) {
+        if (args.length == 0){
+            if (!(sender instanceof Player)){
+                sender.sendMessage("Only a player can execute that command");
+                return true;
+            }
+            TeamInv.TEAM_INV.open((Player) sender);
+            return true;
+        } else if (args.length == 1) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 Teams team = Teams.fromName(args[0]);

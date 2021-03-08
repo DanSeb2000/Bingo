@@ -1,7 +1,5 @@
 package me.danseb.bingo.game;
 
-import org.bukkit.Bukkit;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,11 +9,6 @@ public class BingoManager {
 
     public BingoManager(int difficulty) {
         GAME_ITEMS = setGameItems(difficulty);
-        int i = 1;
-        for (GameItems item : GAME_ITEMS) {
-            Bukkit.broadcastMessage("Item registrado (" + i + "): " + item.getType());
-            i++;
-        }
     }
 
     private ArrayList<GameItems> setGameItems(int difficulty) {

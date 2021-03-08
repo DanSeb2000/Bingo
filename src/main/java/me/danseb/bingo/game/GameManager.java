@@ -9,6 +9,7 @@ import me.danseb.bingo.game.schedulers.InventoryScheduler;
 import me.danseb.bingo.game.schedulers.TimeScheduler;
 import me.danseb.bingo.utils.PluginUtils;
 import me.danseb.bingo.utils.TeleportUtils;
+import me.danseb.bingo.world.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -24,6 +25,7 @@ public class GameManager implements Listener {
 
     private GameState gameState;
     private GameManager gameManager;
+    private WorldManager worldManager;
     public HashMap<UUID, Location> playerLoc = new HashMap<>();
     private HashMap<Teams, Set<GameItems>> gottenItems = new HashMap<>();
     private HashMap<Teams, int[]> rowsCompleted = new HashMap<>();
@@ -35,6 +37,7 @@ public class GameManager implements Listener {
 
     public GameManager() {
         gameManager = this;
+        worldManager = Core.getInstance().getWorldManager();
     }
 
     public synchronized GameState getGameState() {
@@ -61,14 +64,20 @@ public class GameManager implements Listener {
 
     public void preStartGame() {
         setGameState(GameState.STARTING);
-        this.teamsLocation.put(Teams.RED, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
-        this.teamsLocation.put(Teams.BLUE, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
-        this.teamsLocation.put(Teams.GREEN, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
-        this.teamsLocation.put(Teams.YELLOW, TeleportUtils.findRandomSafeLocation(Bukkit.getWorld(
-                Core.getInstance().getWorldManager().getMAP_ID()), Core.getInstance().getWorldManager().getBORDER()));
+        this.teamsLocation.put(Teams.RED, TeleportUtils
+                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
+                        worldManager.getBORDER()));
+        this.teamsLocation.put(Teams.BLUE, TeleportUtils
+                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
+                        worldManager.getBORDER()));
+        this.teamsLocation.put(Teams.GREEN, TeleportUtils
+                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
+                        worldManager.getBORDER()));
+        this.teamsLocation.put(Teams.YELLOW, TeleportUtils
+                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
+                        worldManager.getBORDER()));
+        this.teamsLocation.put(Teams.SPEC, new Location(Bukkit.
+                getWorld(worldManager.getMAP_ID()), 0, 100, 0));
 
         int ii = new Random().nextInt(3)+1;
         for (Player player : Bukkit.getOnlinePlayers()){
@@ -140,8 +149,8 @@ public class GameManager implements Listener {
                     Bukkit.broadcastMessage("§fStarting now!");
                     if (teams.containsKey(Teams.SPEC)) {
                         for (UUID uuid : teams.get(Teams.SPEC)) {
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.SPEC));
                             Bukkit.getPlayer(uuid).setGameMode(GameMode.SPECTATOR);
+                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.SPEC));
                             playerLoc.put(uuid, teamsLocation.get(Teams.SPEC));
                         }
                     }
@@ -190,7 +199,14 @@ public class GameManager implements Listener {
     }
 
     public boolean setPlayerTeam(Player player, Teams team) {
-        return teams.computeIfAbsent(team, teams1 -> new HashSet<>()).add(player.getUniqueId());
+        Teams oldTeam = getPlayerTeam(player.getUniqueId());
+        Bukkit.broadcastMessage(oldTeam.toString());
+        if (oldTeam == Teams.NONE){
+            teams.computeIfAbsent(oldTeam, teams -> new HashSet<>()).add(player.getUniqueId());
+        }
+        teams.computeIfPresent(oldTeam, (teams, uuid) -> new HashSet<>())
+                .remove(player.getUniqueId());
+        return teams.computeIfAbsent(team, teams -> new HashSet<>()).add(player.getUniqueId());
     }
 
     public void teamGotItem(Teams team){

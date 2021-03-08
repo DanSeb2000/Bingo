@@ -5,38 +5,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 
 public class PluginUtils {
 
     public static void sendLog(String prefix, String message) {
-        Core.getInstance().getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "[Bingo!] - " + ChatColor.GOLD + "[" + prefix + "] " + ChatColor.RESET + message);
-    }
-
-    public static void sendDebugLog(String message) {
-        Core.getInstance().getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "[Bingo!] - " + ChatColor.GOLD + "[Debug] " + ChatColor.RESET + message);
-    }
-
-    public static boolean deleteFile(File file) {
-        if (file == null)
-            return false;
-        if (file.isFile())
-            return file.delete();
-        try {
-            Files.walk(file.toPath())
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
+        Core.getInstance().getServer().getConsoleSender()
+                .sendMessage(
+                        ChatColor.AQUA
+                        + "[Bingo!] - "
+                        + ChatColor.GOLD
+                        + "[" + prefix + "] "
+                        + ChatColor.RESET
+                        + message);
     }
 
     public String getCurrentTime(){

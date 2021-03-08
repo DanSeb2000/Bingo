@@ -11,6 +11,8 @@ import me.danseb.bingo.world.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Random;
+
 @Getter
 public class Core extends JavaPlugin {
     private static Core instance;
@@ -19,6 +21,7 @@ public class Core extends JavaPlugin {
     private PluginUtils pluginUtils;
     private static int version;
     private boolean forceDisable = false;
+    private Random random;
 
     @Override
     public void onLoad() {
@@ -42,9 +45,10 @@ public class Core extends JavaPlugin {
             return;
         }
         saveDefaultConfig();
-        this.gameManager = new GameManager();
-        this.worldManager = new WorldManager();
+        this.random = new Random();
         this.pluginUtils = new PluginUtils();
+        this.worldManager = new WorldManager();
+        this.gameManager = new GameManager();
         Bukkit.getScheduler().runTaskLater(this, () -> this.gameManager.newGame(), 1L);
         getServer().getPluginManager().registerEvents(new GameEvents(), this);
         getCommand("bingo").setExecutor(new BingoCardCommand());
