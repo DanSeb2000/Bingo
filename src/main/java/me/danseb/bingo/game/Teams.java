@@ -11,10 +11,10 @@ public enum Teams {
     SPEC(""),
     NONE("");
 
-    private final String teamName;
+    private final String coloredName;
 
     Teams(String name) {
-        this.teamName = name.replace("&", "§");
+        this.coloredName = name.replace("&", "§");
     }
 
     public static Teams fromName(String name){
@@ -26,7 +26,7 @@ public enum Teams {
          return null;
     }
 
-    public String getName(){
-        return this.teamName;
+    public String getColoredName(){
+        return this.coloredName;
     }
 }

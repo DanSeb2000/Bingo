@@ -42,7 +42,7 @@ public class BingoInv implements InventoryProvider {
                 for (Teams team : Core.getInstance().getGameManager().getGottenItems().keySet()) {
                     for (GameItems itemGot : Core.getInstance().getGameManager().getGottenItems().get(team)) {
                         if (itemGot.equals(item)) {
-                            lore.add(team.getName());
+                            lore.add(team.getColoredName());
                         }
                     }
                 }

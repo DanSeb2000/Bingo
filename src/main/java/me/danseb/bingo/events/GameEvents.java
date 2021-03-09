@@ -41,10 +41,13 @@ public class GameEvents implements Listener {
         Player player = event.getPlayer();
         switch (gameManager.getGameState()) {
             case WAITING:
-                player.teleport(worldManager.getSPAWN());
-                gameManager.setPlayerTeam(player, Teams.NONE);
+                player.teleport(worldManager.getSpawn());
                 break;
             case PLAYING:
+                if (gameManager.getPlayerTeam(player.getUniqueId()) == Teams.NONE){
+                    gameManager.setPlayerTeam(player, Teams.SPEC);
+                    player.teleport(gameManager.getTeamsLocation().get(Teams.SPEC));
+                }
                 break;
         }
     }
@@ -62,7 +65,7 @@ public class GameEvents implements Listener {
                 event.setRespawnLocation(gameManager.playerLoc.get(event.getPlayer().getUniqueId()));
                 break;
             default:
-                event.setRespawnLocation(worldManager.getSPAWN());
+                event.setRespawnLocation(worldManager.getSpawn());
                 break;
         }
     }

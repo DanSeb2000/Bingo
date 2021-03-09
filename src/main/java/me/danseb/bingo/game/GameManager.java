@@ -13,6 +13,7 @@ import me.danseb.bingo.world.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +31,7 @@ public class GameManager implements Listener {
     private HashMap<Teams, Set<GameItems>> gottenItems = new HashMap<>();
     private HashMap<Teams, int[]> rowsCompleted = new HashMap<>();
     private HashMap<Teams, int[]> filesCompleted = new HashMap<>();
-    private HashMap<Teams, Set<UUID>> teams = new HashMap<>();
+    private HashMap<Teams, Set<UUID>> teams;
     private HashMap<Teams, Location> teamsLocation = new HashMap<>();
     private long startTime;
     private boolean oneLineWin = true;
@@ -38,6 +39,15 @@ public class GameManager implements Listener {
     public GameManager() {
         gameManager = this;
         worldManager = Core.getInstance().getWorldManager();
+        teams = new HashMap<Teams, Set<UUID>>() {
+            {
+                put(Teams.SPEC, new HashSet<>());
+                put(Teams.RED, new HashSet<>());
+                put(Teams.YELLOW, new HashSet<>());
+                put(Teams.GREEN, new HashSet<>());
+                put(Teams.BLUE, new HashSet<>());
+            }
+        };
     }
 
     public synchronized GameState getGameState() {
@@ -64,54 +74,35 @@ public class GameManager implements Listener {
 
     public void preStartGame() {
         setGameState(GameState.STARTING);
-        this.teamsLocation.put(Teams.RED, TeleportUtils
-                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
-                        worldManager.getBORDER()));
-        this.teamsLocation.put(Teams.BLUE, TeleportUtils
-                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
-                        worldManager.getBORDER()));
-        this.teamsLocation.put(Teams.GREEN, TeleportUtils
-                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
-                        worldManager.getBORDER()));
-        this.teamsLocation.put(Teams.YELLOW, TeleportUtils
-                .findRandomSafeLocation(Bukkit.getWorld(worldManager.getMAP_ID()),
-                        worldManager.getBORDER()));
-        this.teamsLocation.put(Teams.SPEC, new Location(Bukkit.
-                getWorld(worldManager.getMAP_ID()), 0, 100, 0));
+        World world = Bukkit.getWorld(worldManager.getMapId());
 
-        int ii = new Random().nextInt(3)+1;
-        for (Player player : Bukkit.getOnlinePlayers()){
-            if (getPlayerTeam(player.getUniqueId()).equals(Teams.NONE)){
-                switch (ii){
-                    case 1:
-                        setPlayerTeam(player, Teams.RED);
-                        ii++;
-                        break;
-                    case 2:
-                        setPlayerTeam(player, Teams.BLUE);
-                        ii++;
-                        break;
-                    case 3:
-                        setPlayerTeam(player, Teams.GREEN);
-                        ii++;
-                        break;
-                    case 4:
-                        setPlayerTeam(player, Teams.YELLOW);
-                        ii = 1;
-                        break;
-                }
+        for (Teams team : Teams.values()) {
+            if (team == Teams.SPEC) {
+                this.teamsLocation.put(Teams.SPEC, new Location(world, 0, 100, 0));
+            } else if (team != Teams.NONE) {
+                this.teamsLocation.put(team, TeleportUtils
+                        .findRandomSafeLocation(world,
+                                worldManager.getBorder()));
+            }
+        }
+
+        Random random = new Random();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            int randomTeam = random.nextInt(4);
+            if (getPlayerTeam(player.getUniqueId()).equals(Teams.NONE)) {
+                setPlayerTeam(player, Teams.values()[randomTeam]);
             }
         }
 
         Bukkit.broadcastMessage("§fStarting...");
-        new BukkitRunnable() {
+        BukkitRunnable runnable = new BukkitRunnable() {
             int i = 0;
 
             @Override
             public void run() {
                 if (i == 5) {
                     Bukkit.broadcastMessage("§fTeleporting red team to a new location...");
-                    if (teams.containsKey(Teams.RED)){
+                    if (teams.containsKey(Teams.RED)) {
                         for (UUID uuid : teams.get(Teams.RED)) {
                             Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.RED));
                             playerLoc.put(uuid, teamsLocation.get(Teams.RED));
@@ -159,7 +150,9 @@ public class GameManager implements Listener {
                 }
                 i++;
             }
-        }.runTaskTimer(Core.getInstance(), 20L, 20L);
+        };
+
+        runnable.runTaskTimer(Core.getInstance(), 20L, 20L);
 
     }
 
@@ -172,16 +165,10 @@ public class GameManager implements Listener {
 
     public void endGame(Teams winner) {
         setGameState(GameState.ENDING);
-        switch (winner){
-            case RED:
-            case BLUE:
-            case GREEN:
-            case YELLOW:
-                Bukkit.broadcastMessage("§fThe "+ winner.getTeamName() +"§f team won the game!");
-                break;
-            default:
-                Bukkit.broadcastMessage("§fThe game has ended with no winners");
-                break;
+        if (winner == Teams.NONE) {
+            Bukkit.broadcastMessage("§fThe game has ended with no winners");
+        } else {
+            Bukkit.broadcastMessage("§fThe " + winner.getColoredName() + "§f team won the game!");
         }
 
         new EndingScheduler();
@@ -191,7 +178,7 @@ public class GameManager implements Listener {
     public Teams getPlayerTeam(UUID uuid) {
         AtomicReference<Teams> playerTeam = new AtomicReference<>(Teams.NONE);
         teams.forEach((team, uuids) -> {
-            if(uuids.contains(uuid)) {
+            if (uuids.contains(uuid)) {
                 playerTeam.set(team);
             }
         });
@@ -200,21 +187,18 @@ public class GameManager implements Listener {
 
     public boolean setPlayerTeam(Player player, Teams team) {
         Teams oldTeam = getPlayerTeam(player.getUniqueId());
-        Bukkit.broadcastMessage(oldTeam.toString());
-        if (oldTeam == Teams.NONE){
-            teams.computeIfAbsent(oldTeam, teams -> new HashSet<>()).add(player.getUniqueId());
+        if (teams.get(oldTeam) != null){
+            teams.get(oldTeam).remove(player.getUniqueId());
         }
-        teams.computeIfPresent(oldTeam, (teams, uuid) -> new HashSet<>())
-                .remove(player.getUniqueId());
-        return teams.computeIfAbsent(team, teams -> new HashSet<>()).add(player.getUniqueId());
+        return teams.get(team).add(player.getUniqueId());
     }
 
-    public void teamGotItem(Teams team){
+    public void teamGotItem(Teams team) {
         Set<GameItems> items = getGottenItems().get(team);
         GameItems[][] bingoItems = new GameItems[5][5];
         List<List<GameItems>> gameItems = Lists.partition(BingoManager.GAME_ITEMS, 5);
 
-        for (int i = 0; i < gameItems.size(); i++){
+        for (int i = 0; i < gameItems.size(); i++) {
             List<GameItems> item = gameItems.get(i);
             for (int x = 0; x < item.size(); x++)
                 bingoItems[i][x] = item.get(x);
@@ -224,12 +208,12 @@ public class GameManager implements Listener {
         if (!rowsCompleted.containsKey(team))
             rowsCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
-        for (int i = 0; i < 5; i++){
-            if (rows[i] == 5 && rowsCompleted.get(team)[i] != 5){
-                Bukkit.broadcastMessage("§fThe " + team.getTeamName() + "§f team completed a row!");
+        for (int i = 0; i < 5; i++) {
+            if (rows[i] == 5 && rowsCompleted.get(team)[i] != 5) {
+                Bukkit.broadcastMessage("§fThe " + team.getColoredName() + "§f team completed a row!");
                 //team.getLocation().getWorld().spawnEntity(team, EntityType.FIREWORK);
                 rowsCompleted.put(team, rows);
-                if (oneLineWin){
+                if (oneLineWin) {
                     endGame(team);
                 }
             }
@@ -239,36 +223,36 @@ public class GameManager implements Listener {
         if (!filesCompleted.containsKey(team))
             filesCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
-        for (int i = 0; i < 5; i++){
-            if (files[i] == 5 && filesCompleted.get(team)[i] != 5){
-                Bukkit.broadcastMessage("§fThe " + team.getTeamName() + "§f team completed a file!");
+        for (int i = 0; i < 5; i++) {
+            if (files[i] == 5 && filesCompleted.get(team)[i] != 5) {
+                Bukkit.broadcastMessage("§fThe " + team.getColoredName() + "§f team completed a file!");
                 //team.getLocation().getWorld().spawnEntity(team.getLocation(), EntityType.FIREWORK);
                 filesCompleted.put(team, files);
-                if (oneLineWin){
+                if (oneLineWin) {
                     endGame(team);
                 }
             }
         }
     }
 
-    public int[] checkBingoHorizontalLines(Set<GameItems> teamItems, GameItems[][] gameItems){
+    public int[] checkBingoHorizontalLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] row = {0, 0, 0, 0, 0};
 
-        for (int i = 0; i <= 4; i++){
+        for (int i = 0; i <= 4; i++) {
             for (int x = 0; x <= 4; x++)
-                if (teamItems.contains(gameItems[i][x])){
+                if (teamItems.contains(gameItems[i][x])) {
                     row[i]++;
                 }
         }
         return row;
     }
 
-    public int[] checkBingoVerticalLines(Set<GameItems> teamItems, GameItems[][] gameItems){
+    public int[] checkBingoVerticalLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] files = {0, 0, 0, 0, 0};
 
-        for (int i = 0; i <= 4; i++){
+        for (int i = 0; i <= 4; i++) {
             for (int x = 0; x <= 4; x++)
-                if (teamItems.contains(gameItems[x][i])){
+                if (teamItems.contains(gameItems[x][i])) {
                     files[i]++;
                 }
         }

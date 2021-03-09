@@ -13,15 +13,15 @@ import java.util.UUID;
 
 @Getter
 public class WorldManager {
-    private final String MAP_ID = UUID.randomUUID().toString();
-    private final int SEED = Core.getInstance().getRandom().nextInt();
-    private final Location SPAWN = new Location(Bukkit.getWorld("world"), 0, 100, 0);
-    private final int BORDER = 1000;
+    private final String mapId = UUID.randomUUID().toString();
+    private final int seed = Core.getInstance().getRandom().nextInt();
+    private final Location spawn = new Location(Bukkit.getWorld("world"), 0, 100, 0);
+    private final int border = 1000;
 
     public void createNewMap(){
         deleteOldStats();
 
-        PluginUtils.sendLog("Info", "Creating map: ("+ MAP_ID +")");
+        PluginUtils.sendLog("Info", "Creating map: ("+ mapId +")");
         String settings = "{\"coordinateScale\":684.412,\"heightScale\":684.412,\"lowerLimitScale\":512.0," +
                 "\"upperLimitScale\":512.0,\"depthNoiseScaleX\":200.0,\"depthNoiseScaleZ\":200.0," +
                 "\"depthNoiseScaleExponent\":0.5,\"mainNoiseScaleX\":80.0,\"mainNoiseScaleY\":160.0," +
@@ -42,19 +42,19 @@ public class WorldManager {
                 "\"diamondCount\":1,\"diamondMinHeight\":0,\"diamondMaxHeight\":16,\"lapisSize\":7,\"lapisCount\":1," +
                 "\"lapisCenterHeight\":16,\"lapisSpread\":16}";
 
-        WorldCreator worldCreator = new WorldCreator(MAP_ID);
+        WorldCreator worldCreator = new WorldCreator(mapId);
 
         worldCreator.environment(World.Environment.NORMAL);
         worldCreator.type(WorldType.CUSTOMIZED);
         worldCreator.generateStructures(true);
-        worldCreator.seed(SEED);
+        worldCreator.seed(seed);
         worldCreator.generatorSettings(settings);
 
         worldCreator.createWorld();
 
-        World playWorld = Bukkit.getWorld(MAP_ID);
+        World playWorld = Bukkit.getWorld(mapId);
         playWorld.getWorldBorder().setCenter(0,0);
-        playWorld.getWorldBorder().setSize(BORDER*2);
+        playWorld.getWorldBorder().setSize(border *2);
 
         PluginUtils.sendLog("Info", "Map created.");
     }
@@ -77,7 +77,7 @@ public class WorldManager {
     }
 
     public void deleteWorldFiles(){
-        World world = Bukkit.getWorld(Core.getInstance().getWorldManager().getMAP_ID());
+        World world = Bukkit.getWorld(Core.getInstance().getWorldManager().getMapId());
         if (world != null) {
             world.setAutoSave(false);
             Bukkit.unloadWorld(world, false);
@@ -90,7 +90,7 @@ public class WorldManager {
             public void run() {
                 try {
                     FileUtils.deleteDirectory(new File(Core.getInstance().getServer().getWorldContainer()
-                            + File.separator + Core.getInstance().getWorldManager().getMAP_ID()));
+                            + File.separator + Core.getInstance().getWorldManager().getMapId()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

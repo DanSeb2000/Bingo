@@ -30,7 +30,7 @@ public class InventoryScheduler extends BukkitRunnable {
                         Set<GameItems> items = gameManager.getGottenItems().computeIfAbsent(team,
                                 team1 -> new HashSet<>());
                         if (!(items.contains(gameItem))) {
-                            Bukkit.broadcastMessage("The team "+ team.getName() +"§f got an item! in "+ Core.getInstance()
+                            Bukkit.broadcastMessage("The team "+ team.getColoredName() +"§f got an item! in "+ Core.getInstance()
                                     .getPluginUtils().getCurrentTime());
                             items.add(gameItem);
                             gameManager.getGottenItems().put(team, items);
