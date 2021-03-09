@@ -8,8 +8,23 @@ import org.bukkit.scoreboard.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Plugin Utils
+ *
+ * For now to set a custom log, get
+ * the time of the game and the future
+ * scoreboard that I'll implement.
+ */
 public class PluginUtils {
 
+    /**
+     * Custom log in the name of the plugin
+     *
+     * @param prefix
+     * Prefix of the log, can be anything you want
+     * @param message
+     * Message of the log.
+     */
     public static void sendLog(String prefix, String message) {
         Core.getInstance().getServer().getConsoleSender()
                 .sendMessage(
@@ -21,6 +36,10 @@ public class PluginUtils {
                         + message);
     }
 
+    /**
+     * Current time of the game, will
+     * @return as string.
+     */
     public String getCurrentTime(){
         long currentTime = System.currentTimeMillis() - Core.getInstance().getGameManager().getStartTime();
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
@@ -28,6 +47,10 @@ public class PluginUtils {
         return sdf.format(resultdate);
     }
 
+    /**
+     * WIP
+     * @return scoreboard.
+     */
     public Scoreboard setScoreboard(){
         ScoreboardManager sbm = Bukkit.getScoreboardManager();
         Scoreboard sb = sbm.getNewScoreboard();

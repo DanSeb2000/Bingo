@@ -13,13 +13,28 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Random;
 
+/**
+ * Hello! I'm DanSeb2000
+ * I see that you decided to decompile this plugin
+ * for wharever reason, maybe see what's inside,
+ * maybe to stole something or see what's wrong
+ * with my code to tell everyone that this code
+ * is very basic/newie to be published here.
+ *
+ * Don't worry, i don't care what you will do,
+ * feel free to explore everything, for me this
+ * plugin is a proof that I'm learning, maybe
+ * I'll be better in the future, maybe not and
+ * I'll suck, whatever I'll be happy seeing back
+ * at this and know that this work as I expected.
+ */
 @Getter
 public class Core extends JavaPlugin {
+
     private static Core instance;
     private GameManager gameManager;
     private WorldManager worldManager;
     private PluginUtils pluginUtils;
-    private static int version;
     private boolean forceDisable = false;
     private Random random;
 
@@ -28,13 +43,18 @@ public class Core extends JavaPlugin {
         instance = this;
         PluginUtils.sendLog("Info", "Loading Bingo!");
         String serverVersion = getServer().getVersion();
+        /*
+         * If the server version is not 1.12
+         * the plugin will close the server, you
+         * must use 1.12
+         */
         if (!serverVersion.contains("1.12")) {
             PluginUtils.sendLog("Error", "This server version (" + serverVersion + ") is not compatible with Bingo!");
             PluginUtils.sendLog("Info", "Disabling Bingo!");
             forceDisable = true;
             return;
         }
-        loadServerVersion();
+
         PluginUtils.sendLog("Info", "Bingo! loaded.");
     }
 
@@ -44,7 +64,9 @@ public class Core extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(instance);
             return;
         }
+
         saveDefaultConfig();
+
         this.random = new Random();
         this.pluginUtils = new PluginUtils();
         this.worldManager = new WorldManager();
@@ -67,27 +89,7 @@ public class Core extends JavaPlugin {
         PluginUtils.sendLog("Info", "Bingo! succefully disabled.");
     }
 
-    private void loadServerVersion() {
-        String versionString = Bukkit.getBukkitVersion();
-        version = 0;
-        for (int i = 8; i <= 17; i++) {
-            if (versionString.contains("1." + i))
-                version = i;
-        }
-        if (version == 0) {
-            version = 8;
-            PluginUtils.sendLog("Warn", "Failed to detect server version (" + versionString + ")");
-        } else {
-            PluginUtils.sendLog("Info", "Server version 1." + version + " detected.");
-        }
-    }
-
     public static Core getInstance() {
         return instance;
     }
-
-    public static int getVersion() {
-        return version;
-    }
-
 }

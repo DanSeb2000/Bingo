@@ -2,6 +2,13 @@ package me.danseb.bingo.game;
 
 import org.bukkit.Material;
 
+/**
+ * Bingo Items
+ * Declared items of the game,
+ * only 25 of all the items selected
+ * in a specific dificulty will be
+ * added at the bingo card.
+ */
 public class BingoItems {
 
     public static final GameItems[] EASY_ITEMS = new GameItems[] {

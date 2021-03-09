@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * Bingo Manager... or game setter
+ * I created this class with more in mind,
+ * but all goes to GameManager, maybe
+ * in the future I'll delete this class.
+ */
 public class BingoManager {
     public static ArrayList<GameItems> GAME_ITEMS = new ArrayList<>();
 

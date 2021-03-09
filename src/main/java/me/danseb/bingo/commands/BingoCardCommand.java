@@ -6,6 +6,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * The /bingo command
+ * It's a simple class tbh that
+ * only opens an inventory.
+ */
 public class BingoCardCommand implements CommandExecutor {
 
     @Override

@@ -5,19 +5,35 @@ import me.danseb.bingo.Core;
 import me.danseb.bingo.utils.PluginUtils;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.util.UUID;
 
+/**
+ * This is the world manager, here
+ * a custom world will be made and
+ * will be deleted when the game ends
+ */
 @Getter
 public class WorldManager {
     private final String mapId = UUID.randomUUID().toString();
-    private final int seed = Core.getInstance().getRandom().nextInt();
+    private final int seed = new Random().nextInt();
     private final Location spawn = new Location(Bukkit.getWorld("world"), 0, 100, 0);
     private final int border = 1000;
+    private Core plugin;
 
+    public WorldManager(){
+        plugin = Core.getInstance();
+    }
+    /**
+     * Here are the world settings, a very
+     * large String isn't it?
+     * This is mandatory to load a custom
+     * world, in the future i'll make this
+     * configurable thought the config.yml
+     */
     public void createNewMap(){
         deleteOldStats();
 
@@ -59,16 +75,30 @@ public class WorldManager {
         PluginUtils.sendLog("Info", "Map created.");
     }
 
+    /**
+     * This method deletes old statistics
+     * from previous games, ignore the
+     * warning suppresor, there will be
+     * any nullpointers or ignored booleans.
+     *
+     * This is not mine, I don't remember
+     * where I get it.
+     */
+    @SuppressWarnings("all")
     private void deleteOldStats() {
         for (World world : Bukkit.getServer().getWorlds()) {
             File playerdata = new File(world.getName() + "/playerdata");
-            if (playerdata.exists() && playerdata.isDirectory() && playerdata.listFiles() != null)
-                for (File playerFile : playerdata.listFiles())
+            if (playerdata.exists() && playerdata.isDirectory() && playerdata.listFiles() != null){
+                for (File playerFile : playerdata.listFiles()){
                     playerFile.delete();
+                }
+            }
             File stats = new File(world.getName() + "/stats");
-            if (stats.exists() && stats.isDirectory() && playerdata.listFiles() != null)
-                for (File statFile : stats.listFiles())
+            if (stats.exists() && stats.isDirectory() && playerdata.listFiles() != null){
+                for (File statFile : stats.listFiles()){
                     statFile.delete();
+                }
+            }
             File advancements = new File(world.getName() + "/advancements");
             if (advancements.exists() && advancements.isDirectory() && playerdata.listFiles() != null)
                 for (File advancementFile : advancements.listFiles())
@@ -76,25 +106,27 @@ public class WorldManager {
         }
     }
 
+    /**
+     * Tries to delete the custom map,
+     * this works fine in linux, but in
+     * windows, I don't know the cause
+     * yet.
+     */
     public void deleteWorldFiles(){
-        World world = Bukkit.getWorld(Core.getInstance().getWorldManager().getMapId());
+        World world = Bukkit.getWorld(plugin.getWorldManager().getMapId());
         if (world != null) {
             world.setAutoSave(false);
             Bukkit.unloadWorld(world, false);
             for (Chunk chunk : world.getLoadedChunks()){
                 chunk.unload(false);
             }
-        }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    FileUtils.deleteDirectory(new File(Core.getInstance().getServer().getWorldContainer()
-                            + File.separator + Core.getInstance().getWorldManager().getMapId()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+            try {
+                FileUtils.deleteDirectory(new File(plugin.getServer().getWorldContainer()
+                        + File.separator + plugin.getWorldManager().getMapId()));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }.runTaskLaterAsynchronously(Core.getInstance(), 3L);
+        }
     }
 }

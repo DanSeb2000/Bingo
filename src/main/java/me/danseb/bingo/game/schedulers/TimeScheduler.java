@@ -10,6 +10,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * The time scheduler
+ * This only works to get the current time
+ * of the game and automatically ends the
+ * game with no winner if it reaches... (to finish)
+ */
 @Getter
 public class TimeScheduler extends BukkitRunnable {
 

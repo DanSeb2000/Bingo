@@ -21,6 +21,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Game Manager
+ *
+ * Oh god, this is huge, but almost everything
+ * is here, for now it will stay like this,
+ * I have plans to still optimize this and
+ * order it better.
+ */
 @Getter
 public class GameManager implements Listener {
 
@@ -54,24 +62,49 @@ public class GameManager implements Listener {
         return this.gameState;
     }
 
+    /**
+     * Sets a state for the game, depending
+     * of every state the plugin will do one
+     * or other things.
+     *
+     * @param gameState
+     * States from the Enums, non null.
+     */
     public void setGameState(@NonNull GameState gameState) {
         if (this.gameState == gameState)
             return;
         this.gameState = gameState;
     }
 
+    /**
+     * First thing to run, here the
+     * custom map will execute and after
+     * that players can enter the server.
+     */
     public void newGame() {
         setGameState(GameState.LOADING);
-        Core.getInstance().getWorldManager().createNewMap();
+        worldManager.createNewMap();
         preGame();
     }
 
+    /**
+     * Pre game, or the waiting zone
+     * Here the plugin will wait to the
+     * signal of starting the game.
+     */
     public void preGame() {
         setGameState(GameState.WAITING);
-        new BingoManager(2);
         PluginUtils.sendLog("Info", "Players can now enter.");
     }
 
+    /**
+     * Before the oficial start of the game
+     * here will teleport all the players to the
+     * map an will generate the bingo card,
+     * also if a player didn't select a team this
+     * will automatically and randomlly select one
+     * team for the player.
+     */
     public void preStartGame() {
         setGameState(GameState.STARTING);
         World world = Bukkit.getWorld(worldManager.getMapId());
@@ -145,6 +178,7 @@ public class GameManager implements Listener {
                             playerLoc.put(uuid, teamsLocation.get(Teams.SPEC));
                         }
                     }
+                    new BingoManager(2);
                     startGame();
                     cancel();
                 }
@@ -156,6 +190,11 @@ public class GameManager implements Listener {
 
     }
 
+    /**
+     * The game will start here, Time and
+     * Inventory schedulers will start and
+     * the game oficially works.
+     */
     public void startGame() {
         setGameState(GameState.PLAYING);
         startTime = System.currentTimeMillis();
@@ -163,7 +202,16 @@ public class GameManager implements Listener {
         new TimeScheduler();
     }
 
-    public void endGame(Teams winner) {
+    /**
+     * The EndGameTM
+     * If anything reach here, this will end
+     * the game with the specified team.
+     *
+     * @param winner
+     * Winner team, set NONE to end the game
+     * with no winners.
+     */
+    public void endGame(@NonNull Teams winner) {
         setGameState(GameState.ENDING);
         if (winner == Teams.NONE) {
             Bukkit.broadcastMessage("§fThe game has ended with no winners");
@@ -174,7 +222,13 @@ public class GameManager implements Listener {
         new EndingScheduler();
     }
 
-
+    /**
+     * Method that
+     * @return the player team
+     *
+     * @param uuid
+     * Player Unique ID
+     */
     public Teams getPlayerTeam(UUID uuid) {
         AtomicReference<Teams> playerTeam = new AtomicReference<>(Teams.NONE);
         teams.forEach((team, uuids) -> {
@@ -185,6 +239,16 @@ public class GameManager implements Listener {
         return playerTeam.get();
     }
 
+    /**
+     * Set the player's team.
+     *
+     * @param player Player to change the team.
+     *
+     * @param team Team of the player.
+     *
+     * @return Boolean of the success, if false
+     * there was an error.
+     */
     public boolean setPlayerTeam(Player player, Teams team) {
         Teams oldTeam = getPlayerTeam(player.getUniqueId());
         if (teams.get(oldTeam) != null){
@@ -193,6 +257,15 @@ public class GameManager implements Listener {
         return teams.get(team).add(player.getUniqueId());
     }
 
+    /**
+     * A method that checks the team
+     * items to continue the game or finish
+     * it if the team completed the required
+     * goal.
+     *
+     * @param team
+     * Team that got the item.
+     */
     public void teamGotItem(Teams team) {
         Set<GameItems> items = getGottenItems().get(team);
         GameItems[][] bingoItems = new GameItems[5][5];
@@ -204,7 +277,7 @@ public class GameManager implements Listener {
                 bingoItems[i][x] = item.get(x);
         }
 
-        int[] rows = checkBingoHorizontalLines(items, bingoItems);
+        int[] rows = checkBingoRows(items, bingoItems);
         if (!rowsCompleted.containsKey(team))
             rowsCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
@@ -219,7 +292,7 @@ public class GameManager implements Listener {
             }
         }
 
-        int[] files = checkBingoVerticalLines(items, bingoItems);
+        int[] files = checkBingoLines(items, bingoItems);
         if (!filesCompleted.containsKey(team))
             filesCompleted.put(team, new int[]{0, 0, 0, 0, 0});
 
@@ -235,7 +308,20 @@ public class GameManager implements Listener {
         }
     }
 
-    public int[] checkBingoHorizontalLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
+    /**
+     * Check rows of the card.
+     *
+     * @param teamItems
+     * The items of the current team.
+     *
+     * @param gameItems
+     * A X and Y coords of the game items.
+     *
+     * @return
+     * An array of int, that works as
+     * coordinates.
+     */
+    public int[] checkBingoRows(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] row = {0, 0, 0, 0, 0};
 
         for (int i = 0; i <= 4; i++) {
@@ -247,7 +333,20 @@ public class GameManager implements Listener {
         return row;
     }
 
-    public int[] checkBingoVerticalLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
+    /**
+     * Check lines of the card.
+     *
+     * @param teamItems
+     * The items of the current team.
+     *
+     * @param gameItems
+     * A X and Y coords of the game items.
+     *
+     * @return
+     * An array of int, that works as
+     * coordinates.
+     */
+    public int[] checkBingoLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] files = {0, 0, 0, 0, 0};
 
         for (int i = 0; i <= 4; i++) {

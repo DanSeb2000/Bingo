@@ -8,6 +8,17 @@ import org.bukkit.util.Vector;
 
 import java.util.Random;
 
+/**
+ * Teleport Utils
+ *
+ * This class is not mine, I'll credit
+ * Mezy, from UhcCore, because that were
+ * I got it.
+ * Github: https://github.com/Mezy/UhcCore
+ *
+ * Here I get a safe spot for the players
+ * to spawn in the custom world.
+ */
 public class TeleportUtils {
 
     private static Location getGroundLocation(Location loc, boolean allowCaves) {
@@ -53,8 +64,8 @@ public class TeleportUtils {
                 Location betterLocation = getGroundLocation(loc.clone().add(new Vector(x, 0, z)), nether);
                 if (!nether || betterLocation.getBlockY() <= 120) {
                     Material material = betterLocation.clone().add(0.0D, -1.0D, 0.0D).getBlock().getType();
-                    if (!material.equals(UniversalMaterial.STATIONARY_LAVA.getType()) &&
-                            !material.equals(UniversalMaterial.STATIONARY_WATER.getType()))
+                    if (!material.equals(Material.STATIONARY_LAVA) &&
+                            !material.equals(Material.STATIONARY_WATER))
                         return betterLocation;
                 }
             }

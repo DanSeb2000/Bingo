@@ -17,6 +17,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bingo Inventory
+ * The bingo card, I use SmartInvs to
+ * create it, credit to it's creator: MinusKube
+ * Github: https://github.com/MinusKube/SmartInvs
+ *
+ * Also a dependency.
+ */
 public class BingoInv implements InventoryProvider {
     public static final SmartInventory BINGO_INV = SmartInventory.builder()
             .id("bingoInv")

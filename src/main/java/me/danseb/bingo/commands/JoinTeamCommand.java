@@ -9,6 +9,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * The /team command
+ * Uses args if you set them manually to select
+ * a team or not to open an inventory that allows
+ * you to select also a team.
+ */
 public class JoinTeamCommand implements CommandExecutor {
     private final GameManager gameManager;
 

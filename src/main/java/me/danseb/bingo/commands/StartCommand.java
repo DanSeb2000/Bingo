@@ -7,6 +7,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * The /start command
+ * Force start the game with the
+ * current players in the match.
+ */
 public class StartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -27,11 +32,8 @@ public class StartCommand implements CommandExecutor {
                 case ENDING:
                     sender.sendMessage("Error, the game is finishing.");
                     break;
-                default:
-                    sender.sendMessage("Error?");
             }
         }
-
         return true;
     }
 }

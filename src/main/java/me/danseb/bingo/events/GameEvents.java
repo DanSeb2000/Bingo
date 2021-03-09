@@ -13,6 +13,11 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+/**
+ * With GameEvents I refer to modified Spigot
+ * events for the plugin, not custom events,
+ * that, for now, are not implemented.
+ */
 public class GameEvents implements Listener {
     private final GameManager gameManager;
     private final WorldManager worldManager;

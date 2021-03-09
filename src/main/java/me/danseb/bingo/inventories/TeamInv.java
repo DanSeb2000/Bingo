@@ -12,6 +12,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Team Inventory
+ * The team selector inventory.
+ * Same as the Bingo Inventory it uses SmartInv to
+ * create it, credit to it's creator: MinusKube
+ * Github: https://github.com/MinusKube/SmartInvs
+ */
 public class TeamInv implements InventoryProvider {
     private final GameManager gameManager;
     public static final SmartInventory TEAM_INV = SmartInventory.builder()

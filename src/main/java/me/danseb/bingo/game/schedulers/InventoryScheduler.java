@@ -11,6 +11,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The inventory scheduler
+ * This scheduler check the inventory
+ * of every player in the match every
+ * 2 ticks, and so check if the player got
+ * a new bingo item to add.
+ *
+ * It's automatically cancels if the
+ * game is finishing.
+ */
 public class InventoryScheduler extends BukkitRunnable {
     GameManager gameManager = Core.getInstance().getGameManager();
     @Override

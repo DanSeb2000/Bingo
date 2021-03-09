@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
 
+/**
+ * Game items
+ * This is to customize the bingo
+ * items, maybe I'll implement more
+ * things here.
+ */
 @Getter @AllArgsConstructor
 public class GameItems {
     private Material type;
