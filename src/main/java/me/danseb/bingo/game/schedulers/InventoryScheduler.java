@@ -2,6 +2,7 @@ package me.danseb.bingo.game.schedulers;
 
 import me.danseb.bingo.Core;
 import me.danseb.bingo.game.*;
+import me.danseb.bingo.utils.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,13 +14,10 @@ import java.util.Set;
 
 /**
  * The inventory scheduler
- * This scheduler check the inventory
- * of every player in the match every
- * 2 ticks, and so check if the player got
- * a new bingo item to add.
+ * This scheduler check the inventory of every player in the match every
+ * 2 ticks, and so check if the player got a new bingo item to add.
  *
- * It's automatically cancels if the
- * game is finishing.
+ * It's automatically cancels if the game is finishing.
  */
 public class InventoryScheduler extends BukkitRunnable {
     GameManager gameManager = Core.getInstance().getGameManager();
@@ -40,8 +38,9 @@ public class InventoryScheduler extends BukkitRunnable {
                         Set<GameItems> items = gameManager.getGottenItems().computeIfAbsent(team,
                                 team1 -> new HashSet<>());
                         if (!(items.contains(gameItem))) {
-                            Bukkit.broadcastMessage("The team "+ team.getColoredName() +"§f got an item! in "+ Core.getInstance()
-                                    .getPluginUtils().getCurrentTime());
+                            Bukkit.broadcastMessage(Language.GOT_ITEM.getMessage()
+                                    .replace("%team%", team.getColoredName())
+                                    .replace("%time%", Core.getInstance().getPluginUtils().getCurrentTime()));
                             items.add(gameItem);
                             gameManager.getGottenItems().put(team, items);
                             gameManager.teamGotItem(team);

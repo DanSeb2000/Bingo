@@ -8,6 +8,7 @@ import me.danseb.bingo.Core;
 import me.danseb.bingo.game.BingoManager;
 import me.danseb.bingo.game.GameItems;
 import me.danseb.bingo.game.Teams;
+import me.danseb.bingo.utils.Language;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class BingoInv implements InventoryProvider {
 
                 ItemMeta meta = itemStack.getItemMeta();
                 List<String> lore = new ArrayList<>();
-                lore.add(ChatColor.WHITE + "Got by:");
+                lore.add(ChatColor.WHITE + Language.GOT_BY.getMessage());
 
                 for (Teams team : Core.getInstance().getGameManager().getGottenItems().keySet()) {
                     for (GameItems itemGot : Core.getInstance().getGameManager().getGottenItems().get(team)) {

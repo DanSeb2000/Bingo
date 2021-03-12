@@ -19,7 +19,7 @@ public class BingoItems {
             new GameItems(Material.POWERED_MINECART), new GameItems(Material.SULPHUR), new GameItems(Material.COMPASS),
             new GameItems(Material.DIAMOND), new GameItems(Material.BONE), new GameItems(Material.ENDER_PEARL),
             new GameItems(Material.LONG_GRASS, (short) 1), new GameItems(Material.BRICK), new GameItems(Material.MELON),
-            new GameItems(Material.INK_SACK), new GameItems(Material.APPLE), new GameItems(Material.FLINT),
+            new GameItems(Material.INK_SACK, (short) 0), new GameItems(Material.APPLE), new GameItems(Material.FLINT),
             new GameItems(Material.GLASS_BOTTLE), new GameItems(Material.RAILS), new GameItems(Material.MUSHROOM_SOUP),
             new GameItems(Material.CAULDRON_ITEM), new GameItems(Material.RAW_FISH), new GameItems(Material.REDSTONE)
     };

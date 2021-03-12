@@ -7,7 +7,9 @@ import me.danseb.bingo.Core;
 import me.danseb.bingo.game.schedulers.EndingScheduler;
 import me.danseb.bingo.game.schedulers.InventoryScheduler;
 import me.danseb.bingo.game.schedulers.TimeScheduler;
+import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.PluginUtils;
+import me.danseb.bingo.utils.Settings;
 import me.danseb.bingo.utils.TeleportUtils;
 import me.danseb.bingo.world.WorldManager;
 import org.bukkit.Bukkit;
@@ -24,10 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Game Manager
  *
- * Oh god, this is huge, but almost everything
- * is here, for now it will stay like this,
- * I have plans to still optimize this and
- * order it better.
+ * Oh god, this is huge, but almost everything is here, for now it will stay like this,
+ * I have plans to still optimize this and order it better.
  */
 @Getter
 public class GameManager implements Listener {
@@ -42,7 +42,6 @@ public class GameManager implements Listener {
     private HashMap<Teams, Set<UUID>> teams;
     private HashMap<Teams, Location> teamsLocation = new HashMap<>();
     private long startTime;
-    private boolean oneLineWin = true;
 
     public GameManager() {
         gameManager = this;
@@ -63,12 +62,10 @@ public class GameManager implements Listener {
     }
 
     /**
-     * Sets a state for the game, depending
-     * of every state the plugin will do one
+     * Sets a state for the game, depending of every state the plugin will do one
      * or other things.
      *
-     * @param gameState
-     * States from the Enums, non null.
+     * @param gameState States from the Enums, non null.
      */
     public void setGameState(@NonNull GameState gameState) {
         if (this.gameState == gameState)
@@ -77,8 +74,7 @@ public class GameManager implements Listener {
     }
 
     /**
-     * First thing to run, here the
-     * custom map will execute and after
+     * First thing to run, here the custom map will execute and after
      * that players can enter the server.
      */
     public void newGame() {
@@ -89,26 +85,23 @@ public class GameManager implements Listener {
 
     /**
      * Pre game, or the waiting zone
-     * Here the plugin will wait to the
-     * signal of starting the game.
+     * Here the plugin will wait to the signal of starting the game.
      */
     public void preGame() {
         setGameState(GameState.WAITING);
-        PluginUtils.sendLog("Info", "Players can now enter.");
+        PluginUtils.sendLog(Language.INFO.getMessage(), Language.PLAYERS_CAN_ENTER.getMessage());
     }
 
     /**
-     * Before the oficial start of the game
-     * here will teleport all the players to the
-     * map an will generate the bingo card,
-     * also if a player didn't select a team this
-     * will automatically and randomlly select one
-     * team for the player.
+     * Before the oficial start of the game here will teleport all the players to the
+     * map an will generate the bingo card, also if a player didn't select a team this
+     * will automatically and randomlly select one team for the player.
      */
     public void preStartGame() {
         setGameState(GameState.STARTING);
         World world = Bukkit.getWorld(worldManager.getMapId());
 
+        world.setTime(0);
         for (Teams team : Teams.values()) {
             if (team == Teams.SPEC) {
                 this.teamsLocation.put(Teams.SPEC, new Location(world, 0, 100, 0));
@@ -125,60 +118,34 @@ public class GameManager implements Listener {
             if (getPlayerTeam(player.getUniqueId()).equals(Teams.NONE)) {
                 setPlayerTeam(player, Teams.values()[randomTeam]);
             }
+            player.setGameMode(GameMode.SPECTATOR);
         }
 
-        Bukkit.broadcastMessage("§fStarting...");
+        Bukkit.broadcastMessage(Language.STARTING.getMessage());
         BukkitRunnable runnable = new BukkitRunnable() {
             int i = 0;
 
             @Override
             public void run() {
                 if (i == 5) {
-                    Bukkit.broadcastMessage("§fTeleporting red team to a new location...");
-                    if (teams.containsKey(Teams.RED)) {
-                        for (UUID uuid : teams.get(Teams.RED)) {
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.RED));
-                            playerLoc.put(uuid, teamsLocation.get(Teams.RED));
-                        }
-                    }
-                } else if (i == 10) {
-                    Bukkit.broadcastMessage("§fTeleporting blue team to a new location...");
-                    if (teams.containsKey(Teams.BLUE)) {
-                        for (UUID uuid : teams.get(Teams.BLUE)) {
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.BLUE));
-                            playerLoc.put(uuid, teamsLocation.get(Teams.BLUE));
-                        }
-                    }
-                } else if (i == 15) {
-                    Bukkit.broadcastMessage("§fTeleporting yellow team to a new location...");
-                    if (teams.containsKey(Teams.YELLOW)) {
-                        for (UUID uuid : teams.get(Teams.YELLOW)) {
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.YELLOW));
-                            playerLoc.put(uuid, teamsLocation.get(Teams.YELLOW));
-                        }
-                    }
-                } else if (i == 20) {
-                    Bukkit.broadcastMessage("§fTeleporting green team to a new location...");
-                    if (teams.containsKey(Teams.GREEN)) {
-                        for (UUID uuid : teams.get(Teams.GREEN)) {
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.GREEN));
-                            playerLoc.put(uuid, teamsLocation.get(Teams.GREEN));
-                        }
-                    }
+                    Bukkit.broadcastMessage(Language.TELEPORING_TEAMS.getMessage());
+                    teleportTeam(Teams.RED);
+                    teleportTeam(Teams.BLUE);
+                    teleportTeam(Teams.GREEN);
+                    teleportTeam(Teams.YELLOW);
                 }
 
+                if (i % 5 == 0 && i <= 25){
+                    Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
+                            .replace("%second%", String.valueOf(30-i)));
+                }
                 if (i > 25 && i < 30) {
-                    Bukkit.broadcastMessage("§fStarting in " + (30 - i) + " second(s)");
+                    Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
+                            .replace("%second%", String.valueOf(30-i)));
                 } else if (i == 30) {
-                    Bukkit.broadcastMessage("§fStarting now!");
-                    if (teams.containsKey(Teams.SPEC)) {
-                        for (UUID uuid : teams.get(Teams.SPEC)) {
-                            Bukkit.getPlayer(uuid).setGameMode(GameMode.SPECTATOR);
-                            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(Teams.SPEC));
-                            playerLoc.put(uuid, teamsLocation.get(Teams.SPEC));
-                        }
-                    }
-                    new BingoManager(2);
+                    Bukkit.broadcastMessage(Language.STARTING_NOW.getMessage());
+                    teleportTeam(Teams.SPEC);
+                    new BingoManager(Settings.DIFFICULTY.asInt());
                     startGame();
                     cancel();
                 }
@@ -191,11 +158,13 @@ public class GameManager implements Listener {
     }
 
     /**
-     * The game will start here, Time and
-     * Inventory schedulers will start and
+     * The game will start here, Time and Inventory schedulers will start and
      * the game oficially works.
      */
     public void startGame() {
+        for (Player player: Bukkit.getOnlinePlayers()) {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
         setGameState(GameState.PLAYING);
         startTime = System.currentTimeMillis();
         new InventoryScheduler();
@@ -204,30 +173,33 @@ public class GameManager implements Listener {
 
     /**
      * The EndGameTM
-     * If anything reach here, this will end
-     * the game with the specified team.
+     * If anything reach here, this will end the game with the specified team.
      *
-     * @param winner
-     * Winner team, set NONE to end the game
-     * with no winners.
+     * @param winner Winner team, set NONE to end the game with no winners.
      */
     public void endGame(@NonNull Teams winner) {
         setGameState(GameState.ENDING);
         if (winner == Teams.NONE) {
-            Bukkit.broadcastMessage("§fThe game has ended with no winners");
+            Bukkit.broadcastMessage(Language.NO_WINNERS.getMessage());
         } else {
-            Bukkit.broadcastMessage("§fThe " + winner.getColoredName() + "§f team won the game!");
+            Bukkit.broadcastMessage(Language.WINNER.getMessage()
+                    .replace("%team%", winner.getColoredName()));
         }
 
         new EndingScheduler();
     }
 
+    private void teleportTeam(Teams team){
+        for (UUID uuid : teams.get(team)) {
+            Bukkit.getPlayer(uuid).teleport(teamsLocation.get(team));
+            playerLoc.put(uuid, teamsLocation.get(team));
+        }
+    }
+
     /**
      * Method that
      * @return the player team
-     *
-     * @param uuid
-     * Player Unique ID
+     * @param uuid Player Unique ID
      */
     public Teams getPlayerTeam(UUID uuid) {
         AtomicReference<Teams> playerTeam = new AtomicReference<>(Teams.NONE);
@@ -241,15 +213,14 @@ public class GameManager implements Listener {
 
     /**
      * Set the player's team.
-     *
      * @param player Player to change the team.
-     *
      * @param team Team of the player.
-     *
-     * @return Boolean of the success, if false
-     * there was an error.
+     * @return Boolean of the success, if false there was an error.
      */
     public boolean setPlayerTeam(Player player, Teams team) {
+        if (team == null){
+            return false;
+        }
         Teams oldTeam = getPlayerTeam(player.getUniqueId());
         if (teams.get(oldTeam) != null){
             teams.get(oldTeam).remove(player.getUniqueId());
@@ -258,13 +229,10 @@ public class GameManager implements Listener {
     }
 
     /**
-     * A method that checks the team
-     * items to continue the game or finish
-     * it if the team completed the required
-     * goal.
+     * A method that checks the team items to continue the game or finish
+     * it if the team completed the required goal.
      *
-     * @param team
-     * Team that got the item.
+     * @param team Team that got the item.
      */
     public void teamGotItem(Teams team) {
         Set<GameItems> items = getGottenItems().get(team);
@@ -283,10 +251,11 @@ public class GameManager implements Listener {
 
         for (int i = 0; i < 5; i++) {
             if (rows[i] == 5 && rowsCompleted.get(team)[i] != 5) {
-                Bukkit.broadcastMessage("§fThe " + team.getColoredName() + "§f team completed a row!");
+                Bukkit.broadcastMessage(Language.GOT_ROW.getMessage()
+                        .replace("%team%", team.getColoredName()));
                 //team.getLocation().getWorld().spawnEntity(team, EntityType.FIREWORK);
                 rowsCompleted.put(team, rows);
-                if (oneLineWin) {
+                if (!Settings.FULLCARD.asBoolean()) {
                     endGame(team);
                 }
             }
@@ -298,28 +267,37 @@ public class GameManager implements Listener {
 
         for (int i = 0; i < 5; i++) {
             if (files[i] == 5 && filesCompleted.get(team)[i] != 5) {
-                Bukkit.broadcastMessage("§fThe " + team.getColoredName() + "§f team completed a file!");
+                Bukkit.broadcastMessage(Language.GOT_FILE.getMessage()
+                        .replace("%team%", team.getColoredName()));
                 //team.getLocation().getWorld().spawnEntity(team.getLocation(), EntityType.FIREWORK);
                 filesCompleted.put(team, files);
-                if (oneLineWin) {
+                if (!Settings.FULLCARD.asBoolean()) {
                     endGame(team);
                 }
+            }
+        }
+
+        if (Settings.FULLCARD.asBoolean()){
+            int file = 0, row = 0;
+            for (int i = 0; i<5; i++){
+                if (filesCompleted.get(team)[i] == 5){
+                    file++;
+                }
+                if (rowsCompleted.get(team)[i] == 5){
+                    row++;
+                }
+            }
+            if (file == 5 && row == 5){
+                endGame(team);
             }
         }
     }
 
     /**
      * Check rows of the card.
-     *
-     * @param teamItems
-     * The items of the current team.
-     *
-     * @param gameItems
-     * A X and Y coords of the game items.
-     *
-     * @return
-     * An array of int, that works as
-     * coordinates.
+     * @param teamItems The items of the current team.
+     * @param gameItems A X and Y coords of the game items.
+     * @return An array of int, that works as coordinates.
      */
     public int[] checkBingoRows(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] row = {0, 0, 0, 0, 0};
@@ -335,16 +313,9 @@ public class GameManager implements Listener {
 
     /**
      * Check lines of the card.
-     *
-     * @param teamItems
-     * The items of the current team.
-     *
-     * @param gameItems
-     * A X and Y coords of the game items.
-     *
-     * @return
-     * An array of int, that works as
-     * coordinates.
+     * @param teamItems The items of the current team.
+     * @param gameItems A X and Y coords of the game items.
+     * @return An array of int, that works as coordinates.
      */
     public int[] checkBingoLines(Set<GameItems> teamItems, GameItems[][] gameItems) {
         int[] files = {0, 0, 0, 0, 0};

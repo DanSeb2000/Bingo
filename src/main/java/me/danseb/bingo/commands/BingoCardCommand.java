@@ -1,6 +1,10 @@
 package me.danseb.bingo.commands;
 
+import me.danseb.bingo.Core;
+import me.danseb.bingo.game.GameManager;
+import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.inventories.BingoInv;
+import me.danseb.bingo.utils.Language;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,14 +16,23 @@ import org.bukkit.entity.Player;
  * only opens an inventory.
  */
 public class BingoCardCommand implements CommandExecutor {
+    private GameManager gameManager;
+
+    public BingoCardCommand(){
+        gameManager = Core.getInstance().getGameManager();
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)){
-            sender.sendMessage("Only a player can execute that command");
+            sender.sendMessage(Language.PLAYER_COMMAND.getMessage());
             return true;
         }
-        BingoInv.BINGO_INV.open((Player)sender);
+        if (gameManager.getGameState() == GameState.PLAYING){
+            BingoInv.BINGO_INV.open((Player)sender);
+        } else {
+            sender.sendMessage(Language.BINGOCARD_NOTSTARTED.getMessage());
+        }
         return true;
     }
 }

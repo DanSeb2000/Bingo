@@ -19,11 +19,8 @@ public class PluginUtils {
 
     /**
      * Custom log in the name of the plugin
-     *
-     * @param prefix
-     * Prefix of the log, can be anything you want
-     * @param message
-     * Message of the log.
+     * @param prefix Prefix of the log, can be anything you want.
+     * @param message Message of the log.
      */
     public static void sendLog(String prefix, String message) {
         Core.getInstance().getServer().getConsoleSender()
@@ -38,7 +35,7 @@ public class PluginUtils {
 
     /**
      * Current time of the game, will
-     * @return as string.
+     * @return time as string in format mm:ss (eg. 04:56).
      */
     public String getCurrentTime(){
         long currentTime = System.currentTimeMillis() - Core.getInstance().getGameManager().getStartTime();

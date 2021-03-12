@@ -8,10 +8,7 @@ import me.danseb.bingo.world.WorldManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 /**
  * With GameEvents I refer to modified Spigot
@@ -72,6 +69,13 @@ public class GameEvents implements Listener {
             default:
                 event.setRespawnLocation(worldManager.getSpawn());
                 break;
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (gameManager.getGameState() == GameState.STARTING){
+            event.setCancelled(true);
         }
     }
 }

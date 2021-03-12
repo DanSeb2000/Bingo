@@ -3,6 +3,7 @@ package me.danseb.bingo.commands;
 import me.danseb.bingo.Core;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
+import me.danseb.bingo.utils.Language;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,16 +22,16 @@ public class StartCommand implements CommandExecutor {
         } else {
             switch (gm.getGameState()){
                 case LOADING:
-                    sender.sendMessage("Error, the game is loading.");
+                    sender.sendMessage(Language.ERROR_START_LOADING.getMessage());
                     break;
                 case STARTING:
-                    sender.sendMessage("Error, the game is already starting.");
+                    sender.sendMessage(Language.ERROR_START_STARTING.getMessage());
                     break;
                 case PLAYING:
-                    sender.sendMessage("Error, the game has started.");
+                    sender.sendMessage(Language.ERROR_START_PLAYING.getMessage());
                     break;
                 case ENDING:
-                    sender.sendMessage("Error, the game is finishing.");
+                    sender.sendMessage(Language.ERROR_START_ENDING.getMessage());
                     break;
             }
         }

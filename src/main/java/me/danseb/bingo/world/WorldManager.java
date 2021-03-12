@@ -2,6 +2,7 @@ package me.danseb.bingo.world;
 
 import lombok.Getter;
 import me.danseb.bingo.Core;
+import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.PluginUtils;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
@@ -12,9 +13,8 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * This is the world manager, here
- * a custom world will be made and
- * will be deleted when the game ends
+ * This is the world manager, here a custom world will be made and
+ * will be deleted when the game ends.
  */
 @Getter
 public class WorldManager {
@@ -28,16 +28,15 @@ public class WorldManager {
         plugin = Core.getInstance();
     }
     /**
-     * Here are the world settings, a very
-     * large String isn't it?
-     * This is mandatory to load a custom
-     * world, in the future i'll make this
+     * Here are the world settings, a very large String isn't it?
+     * This is mandatory to load a custom world, in the future I'll make this
      * configurable thought the config.yml
      */
     public void createNewMap(){
         deleteOldStats();
 
-        PluginUtils.sendLog("Info", "Creating map: ("+ mapId +")");
+        PluginUtils.sendLog(Language.INFO.getMessage(), Language.WORLD_CREATING.getMessage()
+                .replace("%map%",mapId));
         String settings = "{\"coordinateScale\":684.412,\"heightScale\":684.412,\"lowerLimitScale\":512.0," +
                 "\"upperLimitScale\":512.0,\"depthNoiseScaleX\":200.0,\"depthNoiseScaleZ\":200.0," +
                 "\"depthNoiseScaleExponent\":0.5,\"mainNoiseScaleX\":80.0,\"mainNoiseScaleY\":160.0," +
@@ -71,20 +70,18 @@ public class WorldManager {
         World playWorld = Bukkit.getWorld(mapId);
         playWorld.getWorldBorder().setCenter(0,0);
         playWorld.getWorldBorder().setSize(border *2);
+        playWorld.setPVP(true);
 
-        PluginUtils.sendLog("Info", "Map created.");
+        PluginUtils.sendLog(Language.INFO.getMessage(), Language.WORLD_CREATED.getMessage());
     }
 
     /**
-     * This method deletes old statistics
-     * from previous games, ignore the
-     * warning suppresor, there will be
-     * any nullpointers or ignored booleans.
+     * This method deletes old statistics from previous games, ignore the
+     * warning suppresor for now.
      *
-     * This is not mine, I don't remember
-     * where I get it.
+     * This is not mine, I don't remember where I got it.
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("ConstantConditions")
     private void deleteOldStats() {
         for (World world : Bukkit.getServer().getWorlds()) {
             File playerdata = new File(world.getName() + "/playerdata");
@@ -107,13 +104,11 @@ public class WorldManager {
     }
 
     /**
-     * Tries to delete the custom map,
-     * this works fine in linux, but in
-     * windows, I don't know the cause
-     * yet.
+     * Tries to delete the custom map, this works fine in linux, but in
+     * windows, I don't know the cause yet.
      */
     public void deleteWorldFiles(){
-        World world = Bukkit.getWorld(plugin.getWorldManager().getMapId());
+        World world = Bukkit.getWorld(mapId);
         if (world != null) {
             world.setAutoSave(false);
             Bukkit.unloadWorld(world, false);
