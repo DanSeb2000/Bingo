@@ -1,9 +1,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-apply plugin: 'java'
+plugins {
+    id 'java-library'
+    id("com.github.johnrengelman.shadow") version "6.0.0"
+}
 
 group = 'me.danseb'
-version = '1.0'
+version = '0.9'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -22,12 +25,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
-    compile 'fr.minuskube.inv:smart-invs:1.2.7'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    api 'fr.minuskube.inv:smart-invs:1.2.7'
+    api group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+
+    implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
+}
+
+shadowJar {
+    project.configurations.api.canBeResolved = true
+    configurations = [project.configurations.api]
+    relocate 'fr.minuskube.inv', 'me.danseb.bingo.inventories.api'
 }
 
 processResources {
@@ -35,3 +46,5 @@ processResources {
         filter ReplaceTokens, tokens: [version: version]
     }
 }
+
+build.dependsOn shadowJar

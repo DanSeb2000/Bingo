@@ -1,4 +1,4 @@
-name: bingo
+name: Bingo
 version: @version@
 main: me.danseb.bingo.Core
 api-version: 1.16
@@ -14,3 +14,6 @@ commands:
   team:
     usage: /team
     description: Join a team
+  setspawn:
+    usage: /team
+    description: Set spawn

@@ -1,9 +1,11 @@
 package me.danseb.bingo.world;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.danseb.bingo.Core;
 import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.PluginUtils;
+import me.danseb.bingo.utils.Settings;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 
@@ -20,8 +22,10 @@ import java.util.UUID;
 public class WorldManager {
     private final String mapId = UUID.randomUUID().toString();
     private final int seed = new Random().nextInt();
-    private final Location spawn = new Location(Bukkit.getWorld("world"), 0, 100, 0);
     private final int border = 1000;
+
+    @Setter
+    private Location spawn = Settings.WORLD_SPAWN.asLocation();
     private Core plugin;
 
     public WorldManager(){
@@ -57,6 +61,10 @@ public class WorldManager {
                 "\"diamondCount\":1,\"diamondMinHeight\":0,\"diamondMaxHeight\":16,\"lapisSize\":7,\"lapisCount\":1," +
                 "\"lapisCenterHeight\":16,\"lapisSpread\":16}";
 
+        if (!Settings.OLD_WORLD.asString().equals("0")){
+            deleteWorldFiles(Settings.OLD_WORLD.asString());
+        }
+
         WorldCreator worldCreator = new WorldCreator(mapId);
 
         worldCreator.environment(World.Environment.NORMAL);
@@ -71,6 +79,12 @@ public class WorldManager {
         playWorld.getWorldBorder().setCenter(0,0);
         playWorld.getWorldBorder().setSize(border *2);
         playWorld.setPVP(true);
+
+        World spawnWorld = Bukkit.getWorlds().get(0);
+        spawnWorld.setStorm(false);
+        spawnWorld.setGameRuleValue("doDaylightCycle", "false");
+        spawnWorld.setGameRuleValue("doMobSpawning", "false");
+        spawnWorld.setGameRuleValue("doWeatherCycle", "false");
 
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.WORLD_CREATED.getMessage());
     }
@@ -107,8 +121,11 @@ public class WorldManager {
      * Tries to delete the custom map, this works fine in linux, but in
      * windows, I don't know the cause yet.
      */
-    public void deleteWorldFiles(){
-        World world = Bukkit.getWorld(mapId);
+    public boolean deleteWorldFiles(String name){
+        World world = Bukkit.getWorld(name);
+        File file = new File(plugin.getServer()
+                .getWorldContainer() + File.separator + name);
+
         if (world != null) {
             world.setAutoSave(false);
             Bukkit.unloadWorld(world, false);
@@ -118,10 +135,23 @@ public class WorldManager {
 
             try {
                 FileUtils.deleteDirectory(new File(plugin.getServer().getWorldContainer()
-                        + File.separator + plugin.getWorldManager().getMapId()));
+                        + File.separator + name));
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+
+        if (file.exists()){
+            try {
+                FileUtils.deleteDirectory(file);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
     }
 }

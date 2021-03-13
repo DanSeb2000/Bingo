@@ -127,7 +127,7 @@ public class GameManager implements Listener {
 
             @Override
             public void run() {
-                if (i == 5) {
+                if (i == 0) {
                     Bukkit.broadcastMessage(Language.TELEPORING_TEAMS.getMessage());
                     teleportTeam(Teams.RED);
                     teleportTeam(Teams.BLUE);
@@ -135,14 +135,14 @@ public class GameManager implements Listener {
                     teleportTeam(Teams.YELLOW);
                 }
 
-                if (i % 5 == 0 && i <= 25){
+                if (i % 5 == 0 && i <= 5){
                     Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
-                            .replace("%second%", String.valueOf(30-i)));
+                            .replace("%second%", String.valueOf(15-i)));
                 }
-                if (i > 25 && i < 30) {
+                if (i > 10 && i < 15) {
                     Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
-                            .replace("%second%", String.valueOf(30-i)));
-                } else if (i == 30) {
+                            .replace("%second%", String.valueOf(15-i)));
+                } else if (i == 15) {
                     Bukkit.broadcastMessage(Language.STARTING_NOW.getMessage());
                     teleportTeam(Teams.SPEC);
                     new BingoManager(Settings.DIFFICULTY.asInt());
@@ -163,7 +163,9 @@ public class GameManager implements Listener {
      */
     public void startGame() {
         for (Player player: Bukkit.getOnlinePlayers()) {
-            player.setGameMode(GameMode.SURVIVAL);
+            if (!teams.get(Teams.SPEC).contains(player.getUniqueId())){
+                player.setGameMode(GameMode.SURVIVAL);
+            }
         }
         setGameState(GameState.PLAYING);
         startTime = System.currentTimeMillis();

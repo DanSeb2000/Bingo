@@ -21,9 +21,17 @@ public class BingoManager {
         ArrayList<GameItems> allItems = new ArrayList<>();
         ArrayList<GameItems> randomizedItems = new ArrayList<>();
 
-        if (difficulty == 0) allItems.addAll(Arrays.asList(BingoItems.EASY_ITEMS));
-        else if (difficulty == 1) allItems.addAll(Arrays.asList(BingoItems.NORMAL_ITEMS));
-        else if (difficulty == 2) allItems.addAll(Arrays.asList(BingoItems.HARD_ITEMS));
+        switch (difficulty) {
+            case 0:
+                allItems.addAll(Arrays.asList(BingoItems.EASY_ITEMS));
+                break;
+            case 2:
+                allItems.addAll(Arrays.asList(BingoItems.HARD_ITEMS));
+                break;
+            default:
+                allItems.addAll(Arrays.asList(BingoItems.NORMAL_ITEMS));
+                break;
+        }
 
         for (int i = 0; i < 25; i++) {
             randomizedItems.add(i, allItems.get(i));

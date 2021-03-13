@@ -5,6 +5,7 @@ import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.game.Teams;
 import me.danseb.bingo.world.WorldManager;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,6 +50,7 @@ public class GameEvents implements Listener {
                 if (gameManager.getPlayerTeam(player.getUniqueId()) == Teams.NONE){
                     gameManager.setPlayerTeam(player, Teams.SPEC);
                     player.teleport(gameManager.getTeamsLocation().get(Teams.SPEC));
+                    player.setGameMode(GameMode.SPECTATOR);
                 }
                 break;
         }

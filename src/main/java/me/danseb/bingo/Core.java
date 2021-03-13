@@ -3,6 +3,7 @@ package me.danseb.bingo;
 import lombok.Getter;
 import me.danseb.bingo.commands.BingoCardCommand;
 import me.danseb.bingo.commands.JoinTeamCommand;
+import me.danseb.bingo.commands.SetSpawnCommand;
 import me.danseb.bingo.commands.StartCommand;
 import me.danseb.bingo.events.GameEvents;
 import me.danseb.bingo.game.GameManager;
@@ -75,6 +76,7 @@ public class Core extends JavaPlugin {
         getCommand("bingo").setExecutor(new BingoCardCommand());
         getCommand("start").setExecutor(new StartCommand());
         getCommand("team").setExecutor(new JoinTeamCommand());
+        getCommand("setspawn").setExecutor(new SetSpawnCommand());
 
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.ENABLING_SUCCESS.getMessage());
     }

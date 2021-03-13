@@ -27,6 +27,8 @@ public enum Language {
     GOT_BY("Game.GotBy", "&fGot by:"),
     WINNER("Game.Winner", "&eThe %team% &eteam won the game!"),
     NO_WINNERS("Game.NoWinners", "&cThe game has ended with no winners."),
+    ENDING_IN("Game.EndingIn", "&eEnding in %second% &esecond(s)"),
+    ENDING("Game.Ending", "The game is ending"),
 
     INFO("Prefix.Info","Info"),
     ERROR("Prefix.Error", "Error"),
@@ -58,7 +60,11 @@ public enum Language {
     ERROR_START_PLAYING("Commands.ErrorPlaying",
             "&cError, the game has started."),
     ERROR_START_ENDING("Commands.ErrorEnding",
-            "&cError, the game is finishing.")
+            "&cError, the game is finishing."),
+    ERROR_NOT_WAITING_STATE("Commands.OnlyWaitingTeam",
+            "&cYou can't change your team."),
+    SPAWN_CHANGED("Commands.SpawnChanged",
+            "&eSuccefully changed spawnpoint.")
 
     ;
 
