@@ -1,5 +1,5 @@
 name: Bingo
-version: 0.9
+version: 1.0
 main: me.danseb.bingo.Core
 api-version: 1.16
 authors: [DanSeb2000]
