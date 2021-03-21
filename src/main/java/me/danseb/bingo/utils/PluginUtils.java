@@ -1,8 +1,14 @@
 package me.danseb.bingo.utils;
 
 import me.danseb.bingo.Core;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 import java.text.SimpleDateFormat;
@@ -67,5 +73,19 @@ public class PluginUtils {
         score4.setScore(4);
 
         return sb;
+    }
+
+    /**
+     * Sends an actionbar to the player
+     * @param player Player
+     * @param message Message to the actionbar
+     */
+    public static void sendActionBar(Player player, String message){
+        if (Core.getInstance().getServer().getVersion().contains("1.8")){
+            PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte)2);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        } else {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+        }
     }
 }

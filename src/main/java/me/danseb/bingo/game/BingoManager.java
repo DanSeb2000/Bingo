@@ -1,5 +1,7 @@
 package me.danseb.bingo.game;
 
+import me.danseb.bingo.Core;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,15 +23,25 @@ public class BingoManager {
         ArrayList<GameItems> allItems = new ArrayList<>();
         ArrayList<GameItems> randomizedItems = new ArrayList<>();
 
-        switch (difficulty) {
+        if (Core.getInstance().getServer().getVersion().contains("1.8")) switch (difficulty) {
             case 0:
-                allItems.addAll(Arrays.asList(BingoItems.EASY_ITEMS));
+                allItems.addAll(Arrays.asList(BingoItems1_8.EASY_ITEMS_1_8));
                 break;
             case 2:
-                allItems.addAll(Arrays.asList(BingoItems.HARD_ITEMS));
+                allItems.addAll(Arrays.asList(BingoItems1_8.HARD_ITEMS_1_8));
                 break;
             default:
-                allItems.addAll(Arrays.asList(BingoItems.NORMAL_ITEMS));
+                allItems.addAll(Arrays.asList(BingoItems1_8.NORMAL_ITEMS_1_8));
+                break;
+        } else switch (difficulty) {
+            case 0:
+                allItems.addAll(Arrays.asList(BingoItems.EASY_ITEMS_1_9));
+                break;
+            case 2:
+                allItems.addAll(Arrays.asList(BingoItems.HARD_ITEMS_1_9));
+                break;
+            default:
+                allItems.addAll(Arrays.asList(BingoItems.NORMAL_ITEMS_1_9));
                 break;
         }
 

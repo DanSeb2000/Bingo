@@ -98,7 +98,6 @@ public class GameManager implements Listener {
      * will automatically and randomlly select one team for the player.
      */
     public void preStartGame() {
-        setGameState(GameState.STARTING);
         World world = Bukkit.getWorld(worldManager.getMapId());
 
         world.setTime(0);
@@ -111,6 +110,7 @@ public class GameManager implements Listener {
                                 worldManager.getBorder()));
             }
         }
+
 
         Random random = new Random();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -133,13 +133,14 @@ public class GameManager implements Listener {
                     teleportTeam(Teams.BLUE);
                     teleportTeam(Teams.GREEN);
                     teleportTeam(Teams.YELLOW);
+                    setGameState(GameState.STARTING);
                 }
 
                 if (i % 5 == 0 && i <= 5){
                     Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
                             .replace("%second%", String.valueOf(15-i)));
                 }
-                if (i > 10 && i < 15) {
+                if (i >= 10 && i < 15) {
                     Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
                             .replace("%second%", String.valueOf(15-i)));
                 } else if (i == 15) {

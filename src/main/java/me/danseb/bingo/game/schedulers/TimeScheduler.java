@@ -4,9 +4,8 @@ import lombok.Getter;
 import me.danseb.bingo.Core;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.game.Teams;
+import me.danseb.bingo.utils.PluginUtils;
 import me.danseb.bingo.utils.Settings;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -27,8 +26,9 @@ public class TimeScheduler extends BukkitRunnable {
         for (Player p : Bukkit.getOnlinePlayers()){
             //p.setScoreboard(Core.getInstance().getPluginUtils().setScoreboard());
             String time = Core.getInstance().getPluginUtils().getCurrentTime();
-            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(time));
-            if (time.equals(Settings.GAME_TIME.asString()))
+
+            PluginUtils.sendActionBar(p.getPlayer(), time);
+            if (time.endsWith(Settings.GAME_TIME.asString()))
                 Core.getInstance().getGameManager().endGame(Teams.NONE);
         }
     }

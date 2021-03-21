@@ -6,7 +6,7 @@ import me.danseb.bingo.commands.BingoCardCmd;
 import me.danseb.bingo.commands.JoinTeamCmd;
 import me.danseb.bingo.commands.SetSpawnCmd;
 import me.danseb.bingo.commands.StartCmd;
-import me.danseb.bingo.events.GameEvents;
+import me.danseb.bingo.events.Listeners;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.PluginUtils;
@@ -48,12 +48,13 @@ public class Core extends JavaPlugin {
          * the plugin will close the server, you
          * must use 1.12
          */
-        if (!serverVersion.contains("1.12")) {
+
+        /*if (!serverVersion.contains("1.12")) {
             PluginUtils.sendLog(Language.ERROR.getMessage(), Language.VERSION_ERROR.getMessage()
                     .replace("%version%", serverVersion));
             PluginUtils.sendLog(Language.INFO.getMessage(), Language.DISABLING.getMessage());
             forceDisable = true;
-        }
+        }*/
     }
 
     @Override
@@ -75,7 +76,7 @@ public class Core extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskLater(this, () -> gameManager.newGame(), 1L);
 
-        getServer().getPluginManager().registerEvents(new GameEvents(), this);
+        getServer().getPluginManager().registerEvents(new Listeners(), this);
         getCommand("bingo").setExecutor(new BingoCardCmd());
         getCommand("start").setExecutor(new StartCmd());
         getCommand("team").setExecutor(new JoinTeamCmd());

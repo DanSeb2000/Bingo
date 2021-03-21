@@ -12,9 +12,9 @@ import org.bukkit.Material;
  */
 @Getter @AllArgsConstructor
 public class GameItems {
-    private Material type;
-    private short durability;
-    private boolean checkDurability;
+    private final Material type;
+    private final short durability;
+    private final boolean checkDurability;
 
     public GameItems(Material type){
         this.type = type;

@@ -12,15 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
 /**
- * With GameEvents I refer to modified Spigot
- * events for the plugin, not custom events,
- * that, for now, are not implemented.
+ * Modified listeners for the game
  */
-public class GameEvents implements Listener {
+public class Listeners implements Listener {
     private final GameManager gameManager;
     private final WorldManager worldManager;
 
-    public GameEvents(){
+    public Listeners(){
         gameManager = Core.getInstance().getGameManager();
         worldManager = Core.getInstance().getWorldManager();
     }
@@ -51,6 +49,8 @@ public class GameEvents implements Listener {
                     gameManager.setPlayerTeam(player, Teams.SPEC);
                     player.teleport(gameManager.getTeamsLocation().get(Teams.SPEC));
                     player.setGameMode(GameMode.SPECTATOR);
+                } else {
+                    player.setGameMode(GameMode.SURVIVAL);
                 }
                 break;
         }
@@ -77,7 +77,11 @@ public class GameEvents implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         if (gameManager.getGameState() == GameState.STARTING){
-            event.setCancelled(true);
+            if (event.getFrom().getX() != event.getTo().getX()
+                    || event.getFrom().getY() != event.getTo().getY()
+                    || event.getFrom().getZ() != event.getTo().getZ()){
+                event.getPlayer().teleport(event.getFrom());
+            }
         }
     }
 }
