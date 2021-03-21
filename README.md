@@ -1,9 +1,10 @@
-#Team with your friends and colect all the items needed to win!
+# Team with your friends and colect all the items needed to win!
 
 Inspired in the map created by lorgon111 (twitter)
 
-How to configure:
+###*How to configure:*
 
+```yaml
 Game:
   #Game difficulty, can be 0, 1 or 2.
   Difficulty: 1
@@ -16,11 +17,11 @@ World:
   Spawn: world, 0, 100, 0, 90, 0
   #Don't modify!
   OldWorld: '0'
-
+```
 * Set a spawnpoint with /setspawn
 * Once everyone is ready start the game with /start
 
-Features:
+###*Features:*
 
     Custom world where you can find any biome.
     Very high dungeon spawn rates.
@@ -30,7 +31,7 @@ Features:
     Customizable messages.
 
 
-Instructions:
+###*Instructions:*
 
     Select a team with /team
     Wait until the OP starts the game.
@@ -38,12 +39,11 @@ Instructions:
     When the game starts you'll start by searching items for the bingo card.
     Once one team completes a line, row or all the card the game ends.
 
-/bingo - Open the bingo card
-/team - Select a team
-/start - Start the game (perm: bingo.start)
-/setspawn - Set the spawnpoint (perm: bingo.setspawn)[/SPOILER]
-Bingo card:
-https://i.gyazo.com/dc8e0e6e0c331e0159e59d438f197c42.png
+###*Commands:*
+    /bingo - Open the bingo card
+    /team - Select a team
+    /start - Start the game (perm: bingo.start)
+    /setspawn - Set the spawnpoint (perm: bingo.setspawn)
 
-
-Send any bug report or suggestion to the issues page in GitHub, not in the review!
+###*Bingo card:*
+![](https://i.gyazo.com/dc8e0e6e0c331e0159e59d438f197c42.png)
