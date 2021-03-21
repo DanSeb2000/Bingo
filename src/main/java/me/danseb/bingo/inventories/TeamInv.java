@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class TeamInv implements InventoryProvider {
     private final GameManager gameManager;
     public static final SmartInventory TEAM_INV = SmartInventory.builder()
+            .manager(Core.getInstance().getInvManager())
             .id("teamInv")
             .provider(new TeamInv())
             .size(1, 9)

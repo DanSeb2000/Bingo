@@ -15,10 +15,10 @@ import org.bukkit.entity.Player;
  * It's a simple class tbh that
  * only opens an inventory.
  */
-public class BingoCardCommand implements CommandExecutor {
+public class BingoCardCmd implements CommandExecutor {
     private GameManager gameManager;
 
-    public BingoCardCommand(){
+    public BingoCardCmd(){
         gameManager = Core.getInstance().getGameManager();
     }
 

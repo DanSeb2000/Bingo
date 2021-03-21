@@ -17,10 +17,10 @@ import org.bukkit.entity.Player;
  * a team or not to open an inventory that allows
  * you to select also a team.
  */
-public class JoinTeamCommand implements CommandExecutor {
+public class JoinTeamCmd implements CommandExecutor {
     private final GameManager gameManager;
 
-    public JoinTeamCommand (){
+    public JoinTeamCmd(){
         gameManager = Core.getInstance().getGameManager();
     }
 

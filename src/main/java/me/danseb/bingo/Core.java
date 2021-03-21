@@ -1,10 +1,11 @@
 package me.danseb.bingo;
 
+import fr.minuskube.inv.InventoryManager;
 import lombok.Getter;
-import me.danseb.bingo.commands.BingoCardCommand;
-import me.danseb.bingo.commands.JoinTeamCommand;
-import me.danseb.bingo.commands.SetSpawnCommand;
-import me.danseb.bingo.commands.StartCommand;
+import me.danseb.bingo.commands.BingoCardCmd;
+import me.danseb.bingo.commands.JoinTeamCmd;
+import me.danseb.bingo.commands.SetSpawnCmd;
+import me.danseb.bingo.commands.StartCmd;
 import me.danseb.bingo.events.GameEvents;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.utils.Language;
@@ -33,6 +34,7 @@ public class Core extends JavaPlugin {
     private GameManager gameManager;
     private WorldManager worldManager;
     private PluginUtils pluginUtils;
+    private InventoryManager invManager;
     private boolean forceDisable = false;
     private Random random;
 
@@ -61,22 +63,23 @@ public class Core extends JavaPlugin {
             return;
         }
 
-
         Settings.load();
         Language.load();
 
-        this.random = new Random();
-        this.pluginUtils = new PluginUtils();
-        this.worldManager = new WorldManager();
-        this.gameManager = new GameManager();
+        invManager = new InventoryManager(instance);
+        invManager.init();
+        random = new Random();
+        pluginUtils = new PluginUtils();
+        worldManager = new WorldManager();
+        gameManager = new GameManager();
 
-        Bukkit.getScheduler().runTaskLater(this, () -> this.gameManager.newGame(), 1L);
+        Bukkit.getScheduler().runTaskLater(this, () -> gameManager.newGame(), 1L);
 
         getServer().getPluginManager().registerEvents(new GameEvents(), this);
-        getCommand("bingo").setExecutor(new BingoCardCommand());
-        getCommand("start").setExecutor(new StartCommand());
-        getCommand("team").setExecutor(new JoinTeamCommand());
-        getCommand("setspawn").setExecutor(new SetSpawnCommand());
+        getCommand("bingo").setExecutor(new BingoCardCmd());
+        getCommand("start").setExecutor(new StartCmd());
+        getCommand("team").setExecutor(new JoinTeamCmd());
+        getCommand("setspawn").setExecutor(new SetSpawnCmd());
 
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.ENABLING_SUCCESS.getMessage());
     }

@@ -5,6 +5,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
+/**
+ * Setting enum
+ *
+ * You can freely change this in the config.yml and
+ * through some commands.
+ */
 public enum Settings {
     DIFFICULTY("Game.Difficulty", 1),
     FULLCARD("Game.Fullcard", false),
@@ -14,7 +20,7 @@ public enum Settings {
 
     private final String path;
     private Object object;
-    private Core plugin;
+    private final Core plugin;
 
     Settings(String path, Object object) {
         this.path = path;

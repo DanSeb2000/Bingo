@@ -26,7 +26,7 @@ public class WorldManager {
 
     @Setter
     private Location spawn = Settings.WORLD_SPAWN.asLocation();
-    private Core plugin;
+    private final Core plugin;
 
     public WorldManager(){
         plugin = Core.getInstance();
@@ -62,7 +62,12 @@ public class WorldManager {
                 "\"lapisCenterHeight\":16,\"lapisSpread\":16}";
 
         if (!Settings.OLD_WORLD.asString().equals("0")){
-            deleteWorldFiles(Settings.OLD_WORLD.asString());
+            PluginUtils.sendLog(Language.INFO.getMessage(), "Deleting old world...");
+            if (deleteWorldFiles(Settings.OLD_WORLD.asString())){
+                PluginUtils.sendLog(Language.INFO.getMessage(), "Deleted");
+            } else {
+                PluginUtils.sendLog(Language.ERROR.getMessage(), "Couldn't delete old world.");
+            }
         }
 
         WorldCreator worldCreator = new WorldCreator(mapId);
@@ -85,6 +90,8 @@ public class WorldManager {
         spawnWorld.setGameRuleValue("doDaylightCycle", "false");
         spawnWorld.setGameRuleValue("doMobSpawning", "false");
         spawnWorld.setGameRuleValue("doWeatherCycle", "false");
+
+        Settings.OLD_WORLD.setObject(mapId);
 
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.WORLD_CREATED.getMessage());
     }
@@ -119,7 +126,8 @@ public class WorldManager {
 
     /**
      * Tries to delete the custom map, this works fine in linux, but in
-     * windows, I don't know the cause yet.
+     * windows after the server restart.
+     * Permission problems in windows I guess.
      */
     public boolean deleteWorldFiles(String name){
         World world = Bukkit.getWorld(name);

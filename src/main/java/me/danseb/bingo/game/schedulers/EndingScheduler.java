@@ -17,9 +17,9 @@ import org.bukkit.scheduler.BukkitRunnable;
  * deletes the custom world and shut the server down.
  */
 public class EndingScheduler extends BukkitRunnable {
-    private Core plugin;
-    private GameManager gameManager;
-    private WorldManager worldManager;
+    private final Core plugin;
+    private final GameManager gameManager;
+    private final WorldManager worldManager;
     int i = 0;
 
     @Override
@@ -42,7 +42,6 @@ public class EndingScheduler extends BukkitRunnable {
             if (!(worldManager.deleteWorldFiles(worldManager.getMapId()))){
                 PluginUtils.sendLog(Language.ERROR.getMessage(),
                         "§4[THIS IS NOT A BUG] §7-§c Couldn't delete world, deleting next start...");
-                Settings.OLD_WORLD.setObject(worldManager.getMapId());
             } else {
                 PluginUtils.sendLog(Language.INFO.getMessage(), "World Deleted.");
                 Settings.OLD_WORLD.setObject("0");

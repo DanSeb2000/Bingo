@@ -28,6 +28,7 @@ import java.util.List;
  */
 public class BingoInv implements InventoryProvider {
     public static final SmartInventory BINGO_INV = SmartInventory.builder()
+            .manager(Core.getInstance().getInvManager())
             .id("bingoInv")
             .provider(new BingoInv())
             .size(5, 9)

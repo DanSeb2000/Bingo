@@ -13,12 +13,17 @@ import org.bukkit.command.CommandSender;
  * Force start the game with the
  * current players in the match.
  */
-public class StartCommand implements CommandExecutor {
+public class StartCmd implements CommandExecutor {
+    GameManager gm = Core.getInstance().getGameManager();
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        GameManager gm = Core.getInstance().getGameManager();
         if (gm.getGameState() == GameState.WAITING) {
-            gm.preStartGame();
+            if (sender.hasPermission("bingo.start")){
+                gm.preStartGame();
+            } else {
+                sender.sendMessage(Language.NOT_PREMISSION.getMessage());
+            }
         } else {
             switch (gm.getGameState()){
                 case LOADING:

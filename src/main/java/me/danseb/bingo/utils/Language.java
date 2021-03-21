@@ -11,6 +11,14 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Language enum
+ *
+ * Thanks to Fadest for giving me this archive.
+ *
+ * Here is set the language.yml file and you can freely
+ * change to any language (I think).
+ */
 public enum Language {
     PLAYERS_CAN_ENTER("PreGame.PlayersCanEnter", "&6Players can enter now."),
     SELECT_TEAM("PreGame.SelectTeam", "&0Select your team"),
@@ -62,10 +70,11 @@ public enum Language {
     ERROR_START_ENDING("Commands.ErrorEnding",
             "&cError, the game is finishing."),
     ERROR_NOT_WAITING_STATE("Commands.OnlyWaitingTeam",
-            "&cYou can't change your team."),
+            "&cYou can't change your team now."),
     SPAWN_CHANGED("Commands.SpawnChanged",
-            "&eSuccefully changed spawnpoint.")
-
+            "&eSuccefully changed spawnpoint."),
+    NOT_PREMISSION("Commands.NoPermission",
+            "&cYou can't perform this command.")
     ;
 
     private final String path;
