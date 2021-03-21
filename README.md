@@ -1,6 +1,6 @@
 # Team with your friends and colect all the items needed to win!
 
-Inspired in the map created by lorgon111 (twitter)
+Inspired in the map created by lorgon111 ([twitter](https://twitter.com/lorgon111))
 
 ### How to configure:
 
@@ -18,8 +18,8 @@ World:
   #Don't modify!
   OldWorld: '0'
 ```
-* Set a spawnpoint with /setspawn
-* Once everyone is ready start the game with /start
+    Set a spawnpoint with /setspawn
+    Once everyone is ready start the game with /start
 
 ### Features:
 
