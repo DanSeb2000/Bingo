@@ -2,7 +2,7 @@
 
 Inspired in the map created by lorgon111 (twitter)
 
-###*How to configure:*
+### How to configure:
 
 ```yaml
 Game:
@@ -21,7 +21,7 @@ World:
 * Set a spawnpoint with /setspawn
 * Once everyone is ready start the game with /start
 
-###*Features:*
+### Features:
 
     Custom world where you can find any biome.
     Very high dungeon spawn rates.
@@ -31,7 +31,7 @@ World:
     Customizable messages.
 
 
-###*Instructions:*
+### Instructions:
 
     Select a team with /team
     Wait until the OP starts the game.
@@ -39,11 +39,13 @@ World:
     When the game starts you'll start by searching items for the bingo card.
     Once one team completes a line, row or all the card the game ends.
 
-###*Commands:*
+### Commands:
+
     /bingo - Open the bingo card
     /team - Select a team
     /start - Start the game (perm: bingo.start)
     /setspawn - Set the spawnpoint (perm: bingo.setspawn)
 
-###*Bingo card:*
+### Bingo card:
+
 ![](https://i.gyazo.com/dc8e0e6e0c331e0159e59d438f197c42.png)
