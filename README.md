@@ -1,24 +1,21 @@
-Team with your friends and colect all the items needed to win!
+#Team with your friends and colect all the items needed to win!
 
 Inspired in the map created by lorgon111 (twitter)
 
 How to configure:
 
-[SPOILER="config.yml"]
-[code="yaml"]Game:
-  # Game difficulty, can be 0, 1 or 2.
+Game:
+  #Game difficulty, can be 0, 1 or 2.
   Difficulty: 1
-  # If true players need to complete all the bingo card, if false only one line or row.
+  #If true players need to complete all the bingo card, if false only one line or row.
   Fullcard: false
-  # Sets the end of the game, no one wins if it reachs the time.
+  #Sets the end of the game, no one wins if it reachs the time.
   EndTime: '25:00'
 World:
-  # Spawnpoint, can be set with /setspawn.
+  #Spawnpoint, can be set with /setspawn.
   Spawn: world, 0, 100, 0, 90, 0
-  # Don't modify!
+  #Don't modify!
   OldWorld: '0'
-[/code]
-[/SPOILER]
 
 * Set a spawnpoint with /setspawn
 * Once everyone is ready start the game with /start
@@ -41,13 +38,12 @@ Instructions:
     When the game starts you'll start by searching items for the bingo card.
     Once one team completes a line, row or all the card the game ends.
 
-
-[SPOILER="Commands"]/bingo - Open the bingo card
+/bingo - Open the bingo card
 /team - Select a team
 /start - Start the game (perm: bingo.start)
 /setspawn - Set the spawnpoint (perm: bingo.setspawn)[/SPOILER]
-[SPOILER="Images"]Bingo card:
-[/SPOILER]
+Bingo card:
+https://i.gyazo.com/dc8e0e6e0c331e0159e59d438f197c42.png
 
 
 Send any bug report or suggestion to the issues page in GitHub, not in the review!
