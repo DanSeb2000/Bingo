@@ -1,6 +1,6 @@
 package me.danseb.bingo.utils;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,19 +13,21 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public enum Settings {
     DIFFICULTY("Game.Difficulty", 1),
+    PLAYERS_START("Game.PlayersToStart", 4),
     FULLCARD("Game.Fullcard", false),
     GAME_TIME("Game.EndTime", "25:00"),
     WORLD_SPAWN("World.Spawn", "world, 0, 100, 0, 90, 0"),
-    OLD_WORLD("World.OldWorld", "0");
+    OLD_WORLD("World.OldWorld", "0"),
+    ;
 
     private final String path;
     private Object object;
-    private final Core plugin;
+    private final MainBingo plugin;
 
     Settings(String path, Object object) {
         this.path = path;
         this.object = object;
-        this.plugin = Core.getInstance();
+        this.plugin = MainBingo.getInstance();
     }
 
     public boolean asBoolean() {
@@ -56,7 +58,7 @@ public enum Settings {
     }
 
     public static void load() {
-        FileConfiguration fileConfiguration = Core.getInstance().getConfig();
+        FileConfiguration fileConfiguration = MainBingo.getInstance().getConfig();
         for (Settings value : values()) {
             Object object = value.getObject();
             if (fileConfiguration.contains(value.path)) {
@@ -65,7 +67,7 @@ public enum Settings {
                 fileConfiguration.set(value.path, object);
             }
         }
-        Core.getInstance().saveConfig();
+        MainBingo.getInstance().saveConfig();
     }
 
     public Object getObject() {

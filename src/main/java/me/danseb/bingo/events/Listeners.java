@@ -1,10 +1,12 @@
 package me.danseb.bingo.events;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.game.Teams;
+import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.world.WorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,8 +21,8 @@ public class Listeners implements Listener {
     private final WorldManager worldManager;
 
     public Listeners(){
-        gameManager = Core.getInstance().getGameManager();
-        worldManager = Core.getInstance().getWorldManager();
+        gameManager = MainBingo.getInstance().getGameManager();
+        worldManager = MainBingo.getInstance().getWorldManager();
     }
 
     @EventHandler
@@ -35,10 +37,11 @@ public class Listeners implements Listener {
                     event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is starting");
                 }
             case PLAYING:
-                if (event.getPlayer().hasPermission("bingo.enterbypass") 
-                        || gameManager.getPlayerTeam(event.getPlayer().getUniqueId()) != Teams.NONE){
-
+                if (!event.getPlayer().hasPermission("bingo.enterbypass")
+                        || gameManager.getPlayerTeam(event.getPlayer().getUniqueId()) == Teams.NONE){
+                        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is playing");
                 }
+                break;
             case ENDING:
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game ending");
                 break;
@@ -47,7 +50,6 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        event.setJoinMessage(null);
         Player player = event.getPlayer();
         switch (gameManager.getGameState()) {
             case WAITING:
@@ -64,11 +66,18 @@ public class Listeners implements Listener {
                 }
                 break;
         }
+        event.setJoinMessage(Language.PLAYER_ENTER.getMessage()
+                .replace("%player%", player.getDisplayName())
+                .replace("%players%", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                .replace("%maxplayers%", String.valueOf(Bukkit.getMaxPlayers())));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
-        event.setQuitMessage(null);
+        event.setQuitMessage(Language.PLAYER_LEAVE.getMessage()
+                .replace("%player%", event.getPlayer().getDisplayName())
+                .replace("%players%", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                .replace("%maxplayers%", String.valueOf(Bukkit.getMaxPlayers())));
     }
 
     @EventHandler
@@ -88,7 +97,6 @@ public class Listeners implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (gameManager.getGameState() == GameState.STARTING){
             if (event.getFrom().getX() != event.getTo().getX()
-                    || event.getFrom().getY() != event.getTo().getY()
                     || event.getFrom().getZ() != event.getTo().getZ()){
                 event.getPlayer().teleport(event.getFrom());
             }

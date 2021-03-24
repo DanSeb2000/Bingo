@@ -17,10 +17,12 @@ public enum Teams {
     NONE("", "");
 
     private final String colored;
+    private final String color;
     private final String team;
 
     Teams(String colored, String team) {
         this.colored = colored.replace("&", "§")+team;
+        this.color = colored.replace("&", "§");
         this.team = team;
     }
 
@@ -44,5 +46,13 @@ public enum Teams {
      */
     public String getColoredName(){
         return this.colored;
+    }
+
+    /**
+     * Get the color of the specified team.
+     * @return A string with the color.
+     */
+    public String getTeamColor(){
+        return this.color;
     }
 }

@@ -4,7 +4,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.Teams;
 import me.danseb.bingo.utils.Language;
@@ -23,7 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class TeamInv implements InventoryProvider {
     private final GameManager gameManager;
     public static final SmartInventory TEAM_INV = SmartInventory.builder()
-            .manager(Core.getInstance().getInvManager())
+            .manager(MainBingo.getInstance().getInvManager())
             .id("teamInv")
             .provider(new TeamInv())
             .size(1, 9)
@@ -31,7 +31,7 @@ public class TeamInv implements InventoryProvider {
             .build();
 
     public TeamInv(){
-        this.gameManager = Core.getInstance().getGameManager();
+        this.gameManager = MainBingo.getInstance().getGameManager();
     }
     @Override
     public void init(Player player, InventoryContents contents) {

@@ -1,7 +1,7 @@
 package me.danseb.bingo.game.schedulers;
 
 import lombok.Getter;
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.game.Teams;
 import me.danseb.bingo.utils.PluginUtils;
@@ -21,19 +21,23 @@ public class TimeScheduler extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (Core.getInstance().getGameManager().getGameState() != GameState.PLAYING) cancel();
+        if (MainBingo.getInstance().getGameManager().getGameState() != GameState.PLAYING) cancel();
 
         for (Player p : Bukkit.getOnlinePlayers()){
             //p.setScoreboard(Core.getInstance().getPluginUtils().setScoreboard());
-            String time = Core.getInstance().getPluginUtils().getCurrentTime();
+            String time = MainBingo.getInstance().getPluginUtils().getCurrentTime();
 
             PluginUtils.sendActionBar(p.getPlayer(), time);
-            if (time.endsWith(Settings.GAME_TIME.asString()))
-                Core.getInstance().getGameManager().endGame(Teams.NONE);
+            if (!Settings.GAME_TIME.asString().endsWith("00:00")){
+                if (time.endsWith(Settings.GAME_TIME.asString())){
+                    MainBingo.getInstance().getGameManager().endGame(Teams.NONE);
+                }
+            }
+
         }
     }
 
     public TimeScheduler() {
-        runTaskTimer(Core.getInstance(), 20L, 20L);
+        runTaskTimer(MainBingo.getInstance(), 20L, 20L);
     }
 }

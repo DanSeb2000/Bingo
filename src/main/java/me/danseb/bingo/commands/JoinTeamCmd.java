@@ -1,6 +1,6 @@
 package me.danseb.bingo.commands;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.game.Teams;
@@ -21,12 +21,12 @@ public class JoinTeamCmd implements CommandExecutor {
     private final GameManager gameManager;
 
     public JoinTeamCmd(){
-        gameManager = Core.getInstance().getGameManager();
+        gameManager = MainBingo.getInstance().getGameManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (Core.getInstance().getGameManager().getGameState() != GameState.WAITING){
+        if (MainBingo.getInstance().getGameManager().getGameState() != GameState.WAITING){
             sender.sendMessage(Language.ERROR_NOT_WAITING_STATE.getMessage());
             return true;
         }

@@ -1,6 +1,6 @@
 package me.danseb.bingo.game;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class BingoManager {
         ArrayList<GameItems> allItems = new ArrayList<>();
         ArrayList<GameItems> randomizedItems = new ArrayList<>();
 
-        if (Core.getInstance().getServer().getVersion().contains("1.8")) switch (difficulty) {
+        if (MainBingo.getInstance().getServer().getVersion().contains("1.8")) switch (difficulty) {
             case 0:
                 allItems.addAll(Arrays.asList(BingoItems1_8.EASY_ITEMS_1_8));
                 break;

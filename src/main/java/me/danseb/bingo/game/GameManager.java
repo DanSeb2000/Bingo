@@ -3,7 +3,7 @@ package me.danseb.bingo.game;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.NonNull;
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.schedulers.EndingScheduler;
 import me.danseb.bingo.game.schedulers.InventoryScheduler;
 import me.danseb.bingo.game.schedulers.TimeScheduler;
@@ -18,6 +18,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -32,20 +34,25 @@ import java.util.concurrent.atomic.AtomicReference;
 @Getter
 public class GameManager implements Listener {
 
-    private GameState gameState;
-    private GameManager gameManager;
-    private WorldManager worldManager;
     public HashMap<UUID, Location> playerLoc = new HashMap<>();
-    private HashMap<Teams, Set<GameItems>> gottenItems = new HashMap<>();
-    private HashMap<Teams, int[]> rowsCompleted = new HashMap<>();
-    private HashMap<Teams, int[]> filesCompleted = new HashMap<>();
-    private HashMap<Teams, Set<UUID>> teams;
-    private HashMap<Teams, Location> teamsLocation = new HashMap<>();
+
+    private final GameManager gameManager;
+    private final WorldManager worldManager;
+    private final HashMap<Teams, Set<GameItems>> gottenItems = new HashMap<>();
+    private final HashMap<Teams, int[]> rowsCompleted = new HashMap<>();
+    private final HashMap<Teams, int[]> filesCompleted = new HashMap<>();
+    private final HashMap<Teams, Set<UUID>> teams;
+    private final HashMap<Teams, Location> teamsLocation = new HashMap<>();
+    private final MainBingo plugin;
+
+    private GameState gameState;
     private long startTime;
+    private final int startPlayers = Settings.PLAYERS_START.asInt();
 
     public GameManager() {
+        plugin = MainBingo.getInstance();
         gameManager = this;
-        worldManager = Core.getInstance().getWorldManager();
+        worldManager = plugin.getWorldManager();
         teams = new HashMap<Teams, Set<UUID>>() {
             {
                 put(Teams.SPEC, new HashSet<>());
@@ -80,6 +87,7 @@ public class GameManager implements Listener {
     public void newGame() {
         setGameState(GameState.LOADING);
         worldManager.createNewMap();
+        PluginUtils.sendLog(Language.INFO.getMessage(), Language.PLAYERS_CAN_ENTER.getMessage());
         preGame();
     }
 
@@ -89,15 +97,6 @@ public class GameManager implements Listener {
      */
     public void preGame() {
         setGameState(GameState.WAITING);
-        PluginUtils.sendLog(Language.INFO.getMessage(), Language.PLAYERS_CAN_ENTER.getMessage());
-    }
-
-    /**
-     * Before the oficial start of the game here will teleport all the players to the
-     * map an will generate the bingo card, also if a player didn't select a team this
-     * will automatically and randomlly select one team for the player.
-     */
-    public void preStartGame() {
         World world = Bukkit.getWorld(worldManager.getMapId());
 
         world.setTime(0);
@@ -111,6 +110,48 @@ public class GameManager implements Listener {
             }
         }
 
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!(gameState == GameState.WAITING || gameState == GameState.STARTING)){
+                    cancel();
+                }
+
+                for (Player player : Bukkit.getOnlinePlayers()){
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.SATURATION
+                                    , 130
+                                    , 4
+                                    , true
+                                    , false));
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE
+                                    , 130
+                                    , 4
+                                    , true
+                                    , false));
+                }
+                if (Bukkit.getOnlinePlayers().size() >= startPlayers){
+                    preStartGame(false);
+                    cancel();
+                }
+            }
+        };
+
+        runnable.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Before the oficial start of the game here will teleport all the players to the
+     * map an will generate the bingo card, also if a player didn't select a team this
+     * will automatically and randomlly select one team for the player.
+     */
+    public void preStartGame(boolean force) {
+        if (force){
+            Bukkit.broadcastMessage(Language.FORCE_START.getMessage());
+        } else {
+            Bukkit.broadcastMessage(Language.AUTO_START.getMessage());
+        }
 
         Random random = new Random();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -118,16 +159,36 @@ public class GameManager implements Listener {
             if (getPlayerTeam(player.getUniqueId()).equals(Teams.NONE)) {
                 setPlayerTeam(player, Teams.values()[randomTeam]);
             }
-            player.setGameMode(GameMode.SPECTATOR);
+            player.setAllowFlight(true);
         }
 
-        Bukkit.broadcastMessage(Language.STARTING.getMessage());
         BukkitRunnable runnable = new BukkitRunnable() {
             int i = 0;
 
             @Override
             public void run() {
-                if (i == 0) {
+                if (!force && Bukkit.getOnlinePlayers().size() < Settings.PLAYERS_START.asInt()){
+                    Bukkit.broadcastMessage(Language.STARTING_CANCELED.getMessage());
+                    preGame();
+                    cancel();
+                }
+
+                for (Player player : Bukkit.getOnlinePlayers()){
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.SATURATION
+                                    , 130
+                                    , 4
+                                    , true
+                                    , false));
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE
+                                    , 130
+                                    , 4
+                                    , true
+                                    , false));
+                }
+
+                if (i == 10) {
                     Bukkit.broadcastMessage(Language.TELEPORING_TEAMS.getMessage());
                     teleportTeam(Teams.RED);
                     teleportTeam(Teams.BLUE);
@@ -136,14 +197,10 @@ public class GameManager implements Listener {
                     setGameState(GameState.STARTING);
                 }
 
-                if (i % 5 == 0 && i <= 5){
+                if (i >= 10 && i < 20) {
                     Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
-                            .replace("%second%", String.valueOf(15-i)));
-                }
-                if (i >= 10 && i < 15) {
-                    Bukkit.broadcastMessage(Language.STARTING_IN.getMessage()
-                            .replace("%second%", String.valueOf(15-i)));
-                } else if (i == 15) {
+                            .replace("%second%", String.valueOf(20-i)));
+                } else if (i == 20) {
                     Bukkit.broadcastMessage(Language.STARTING_NOW.getMessage());
                     teleportTeam(Teams.SPEC);
                     new BingoManager(Settings.DIFFICULTY.asInt());
@@ -154,7 +211,7 @@ public class GameManager implements Listener {
             }
         };
 
-        runnable.runTaskTimer(Core.getInstance(), 20L, 20L);
+        runnable.runTaskTimer(plugin, 20L, 20L);
 
     }
 
@@ -166,6 +223,7 @@ public class GameManager implements Listener {
         for (Player player: Bukkit.getOnlinePlayers()) {
             if (!teams.get(Teams.SPEC).contains(player.getUniqueId())){
                 player.setGameMode(GameMode.SURVIVAL);
+                player.setAllowFlight(false);
             }
         }
         setGameState(GameState.PLAYING);
@@ -228,6 +286,8 @@ public class GameManager implements Listener {
         if (teams.get(oldTeam) != null){
             teams.get(oldTeam).remove(player.getUniqueId());
         }
+        player.setDisplayName(team.getColor()+player.getName()+"§r");
+        player.setPlayerListName(team.getColor()+player.getName()+"§r");
         return teams.get(team).add(player.getUniqueId());
     }
 

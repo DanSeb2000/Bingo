@@ -4,7 +4,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.BingoManager;
 import me.danseb.bingo.game.GameItems;
 import me.danseb.bingo.game.Teams;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class BingoInv implements InventoryProvider {
     public static final SmartInventory BINGO_INV = SmartInventory.builder()
-            .manager(Core.getInstance().getInvManager())
+            .manager(MainBingo.getInstance().getInvManager())
             .id("bingoInv")
             .provider(new BingoInv())
             .size(5, 9)
@@ -49,8 +49,8 @@ public class BingoInv implements InventoryProvider {
                 List<String> lore = new ArrayList<>();
                 lore.add(ChatColor.WHITE + Language.GOT_BY.getMessage());
 
-                for (Teams team : Core.getInstance().getGameManager().getGottenItems().keySet()) {
-                    for (GameItems itemGot : Core.getInstance().getGameManager().getGottenItems().get(team)) {
+                for (Teams team : MainBingo.getInstance().getGameManager().getGottenItems().keySet()) {
+                    for (GameItems itemGot : MainBingo.getInstance().getGameManager().getGottenItems().get(team)) {
                         if (itemGot.equals(item)) {
                             lore.add(team.getColoredName());
                         }

@@ -28,9 +28,9 @@ import java.util.Random;
  * I'll suck, whatever I'll be happy seeing back at this and know that this work as I expected.
  */
 @Getter
-public class Core extends JavaPlugin {
+public class MainBingo extends JavaPlugin {
 
-    private static Core instance;
+    private static MainBingo instance;
     private GameManager gameManager;
     private WorldManager worldManager;
     private PluginUtils pluginUtils;
@@ -42,14 +42,10 @@ public class Core extends JavaPlugin {
     public void onLoad() {
         instance = this;
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.LOADING.getMessage());
-        String serverVersion = getServer().getVersion();
         /*
-         * If the server version is not 1.12
-         * the plugin will close the server, you
-         * must use 1.12
-         */
+        String serverVersion = getServer().getVersion();
 
-        /*if (!serverVersion.contains("1.12")) {
+        if (!serverVersion.contains("1.12")) {
             PluginUtils.sendLog(Language.ERROR.getMessage(), Language.VERSION_ERROR.getMessage()
                     .replace("%version%", serverVersion));
             PluginUtils.sendLog(Language.INFO.getMessage(), Language.DISABLING.getMessage());
@@ -93,7 +89,7 @@ public class Core extends JavaPlugin {
         PluginUtils.sendLog(Language.INFO.getMessage(), Language.DISABLING.getMessage());
     }
 
-    public static Core getInstance() {
+    public static MainBingo getInstance() {
         return instance;
     }
 }

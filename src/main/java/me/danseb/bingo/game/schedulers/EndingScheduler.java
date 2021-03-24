@@ -1,6 +1,6 @@
 package me.danseb.bingo.game.schedulers;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.utils.Language;
@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * deletes the custom world and shut the server down.
  */
 public class EndingScheduler extends BukkitRunnable {
-    private final Core plugin;
+    private final MainBingo plugin;
     private final GameManager gameManager;
     private final WorldManager worldManager;
     int i = 0;
@@ -54,9 +54,9 @@ public class EndingScheduler extends BukkitRunnable {
     }
 
     public EndingScheduler(){
-        plugin = Core.getInstance();
+        plugin = MainBingo.getInstance();
         gameManager = plugin.getGameManager();
         worldManager = plugin.getWorldManager();
-        runTaskTimer(Core.getInstance(), 0L, 20L);
+        runTaskTimer(MainBingo.getInstance(), 0L, 20L);
     }
 }

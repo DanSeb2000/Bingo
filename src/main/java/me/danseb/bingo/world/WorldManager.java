@@ -2,7 +2,7 @@ package me.danseb.bingo.world;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.PluginUtils;
 import me.danseb.bingo.utils.Settings;
@@ -26,10 +26,10 @@ public class WorldManager {
 
     @Setter
     private Location spawn = Settings.WORLD_SPAWN.asLocation();
-    private final Core plugin;
+    private final MainBingo plugin;
 
     public WorldManager(){
-        plugin = Core.getInstance();
+        plugin = MainBingo.getInstance();
     }
     /**
      * Here are the world settings, a very large String isn't it?

@@ -1,6 +1,6 @@
 package me.danseb.bingo.utils;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,10 +25,14 @@ public enum Language {
     EXIT("PreGame.Exit", "&fExit"),
     CHANGED_TEAM("PreGame.ChangedTeam", "&eSuccefully changed to %team% &eteam."),
     CHANGED_SPEC("PreGame.ChangedSpec","&eSuccefully changed to spectator."),
-    TELEPORING_TEAMS("PreGame.TeleportingTeams", "&bTeleporting teams to a new location..."),
-    STARTING("PreGame.Starting", "&eStarting..."),
+    PLAYER_ENTER("PreGame.PlayerJoined","&6%player% &ejoined the game &7(&f%players%&7/&f%maxplayers%&7)"),
+    PLAYER_LEAVE("PreGame.PlayerLeft","&6%player% &eleft the game &7(&f%players%&7/&f%maxplayers%&7)"),
+    AUTO_START("PreGame.AutoStart", "&eEnough players, starting..."),
+    FORCE_START("PreGame.StartingForced", "&eStarting game..."),
     STARTING_IN("PreGame.StartingIn", "&eStarting in %second% &esecond(s)"),
     STARTING_NOW("PreGame.Start", "&eStarting now!"),
+    STARTING_CANCELED("PreGame.StartCanceled", "&cStarting cancelled."),
+    TELEPORING_TEAMS("PreGame.TeleportingTeams", "&bTeleporting teams to a new location..."),
     GOT_ROW("Game.RowCompleted", "&bThe %team% &bteam completed a row!"),
     GOT_FILE("Game.LineCompleted", "&bThe %team% &bteam completed a file!"),
     GOT_ITEM("Game.ItemGot", "&bThe %team% &bteam got an item! in &6%time%"),
@@ -86,7 +90,7 @@ public enum Language {
     }
 
     public static void load() {
-        File file = new File(Core.getInstance().getDataFolder(), "language.yml");
+        File file = new File(MainBingo.getInstance().getDataFolder(), "language.yml");
         if (!file.exists()) {
             try {
                 file.createNewFile();

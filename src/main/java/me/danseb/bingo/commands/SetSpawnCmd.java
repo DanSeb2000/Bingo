@@ -1,6 +1,6 @@
 package me.danseb.bingo.commands;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.utils.Language;
 import me.danseb.bingo.utils.Settings;
 import org.bukkit.Location;
@@ -30,7 +30,7 @@ public class SetSpawnCmd implements CommandExecutor {
                 +", "+ location.getPitch();
 
         Settings.WORLD_SPAWN.setObject(locate);
-        Core.getInstance().getWorldManager().setSpawn(Settings.WORLD_SPAWN.asLocation());
+        MainBingo.getInstance().getWorldManager().setSpawn(Settings.WORLD_SPAWN.asLocation());
         sender.sendMessage(Language.SPAWN_CHANGED.getMessage());
         return true;
     }

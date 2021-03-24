@@ -1,6 +1,6 @@
 package me.danseb.bingo.utils;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -29,7 +29,7 @@ public class PluginUtils {
      * @param message Message of the log.
      */
     public static void sendLog(String prefix, String message) {
-        Core.getInstance().getServer().getConsoleSender()
+        MainBingo.getInstance().getServer().getConsoleSender()
                 .sendMessage(
                         ChatColor.AQUA
                         + "[Bingo!] - "
@@ -44,7 +44,7 @@ public class PluginUtils {
      * @return time as string in format mm:ss (eg. 04:56).
      */
     public String getCurrentTime(){
-        long currentTime = System.currentTimeMillis() - Core.getInstance().getGameManager().getStartTime();
+        long currentTime = System.currentTimeMillis() - MainBingo.getInstance().getGameManager().getStartTime();
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
         Date resultdate = new Date(currentTime);
         return sdf.format(resultdate);
@@ -81,7 +81,7 @@ public class PluginUtils {
      * @param message Message to the actionbar
      */
     public static void sendActionBar(Player player, String message){
-        if (Core.getInstance().getServer().getVersion().contains("1.8")){
+        if (MainBingo.getInstance().getServer().getVersion().contains("1.8")){
             PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte)2);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         } else {

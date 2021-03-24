@@ -1,6 +1,6 @@
 package me.danseb.bingo.game.schedulers;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.*;
 import me.danseb.bingo.utils.Language;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ import java.util.Set;
  * It's automatically cancels if the game is finishing.
  */
 public class InventoryScheduler extends BukkitRunnable {
-    GameManager gameManager = Core.getInstance().getGameManager();
+    GameManager gameManager = MainBingo.getInstance().getGameManager();
     @Override
     public void run() {
 
@@ -40,7 +40,7 @@ public class InventoryScheduler extends BukkitRunnable {
                         if (!(items.contains(gameItem))) {
                             Bukkit.broadcastMessage(Language.GOT_ITEM.getMessage()
                                     .replace("%team%", team.getColoredName())
-                                    .replace("%time%", Core.getInstance().getPluginUtils().getCurrentTime()));
+                                    .replace("%time%", MainBingo.getInstance().getPluginUtils().getCurrentTime()));
                             items.add(gameItem);
                             gameManager.getGottenItems().put(team, items);
                             gameManager.teamGotItem(team);
@@ -53,6 +53,6 @@ public class InventoryScheduler extends BukkitRunnable {
     }
 
     public InventoryScheduler() {
-        runTaskTimer(Core.getInstance(), 1L, 2L);
+        runTaskTimer(MainBingo.getInstance(), 1L, 2L);
     }
 }

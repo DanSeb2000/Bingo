@@ -1,6 +1,6 @@
 package me.danseb.bingo.commands;
 
-import me.danseb.bingo.Core;
+import me.danseb.bingo.MainBingo;
 import me.danseb.bingo.game.GameManager;
 import me.danseb.bingo.game.GameState;
 import me.danseb.bingo.inventories.BingoInv;
@@ -16,10 +16,10 @@ import org.bukkit.entity.Player;
  * only opens an inventory.
  */
 public class BingoCardCmd implements CommandExecutor {
-    private GameManager gameManager;
+    private final GameManager gameManager;
 
     public BingoCardCmd(){
-        gameManager = Core.getInstance().getGameManager();
+        gameManager = MainBingo.getInstance().getGameManager();
     }
 
     @Override
