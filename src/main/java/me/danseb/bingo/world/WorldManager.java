@@ -126,7 +126,7 @@ public class WorldManager {
 
     /**
      * Tries to delete the custom map, this works fine in linux, but in
-     * windows after the server restart.
+     * windows after the server restart (1.9+).
      * Permission problems in windows I guess.
      */
     public boolean deleteWorldFiles(String name){

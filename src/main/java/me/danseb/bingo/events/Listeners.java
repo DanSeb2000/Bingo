@@ -30,6 +30,15 @@ public class Listeners implements Listener {
             case LOADING:
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game still loading");
                 break;
+            case STARTING:
+                if (gameManager.getPlayerTeam(event.getPlayer().getUniqueId()) == Teams.NONE){
+                    event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is starting");
+                }
+            case PLAYING:
+                if (event.getPlayer().hasPermission("bingo.enterbypass") 
+                        || gameManager.getPlayerTeam(event.getPlayer().getUniqueId()) != Teams.NONE){
+
+                }
             case ENDING:
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game ending");
                 break;
@@ -43,6 +52,7 @@ public class Listeners implements Listener {
         switch (gameManager.getGameState()) {
             case WAITING:
                 player.teleport(worldManager.getSpawn());
+                player.setGameMode(GameMode.ADVENTURE);
                 break;
             case PLAYING:
                 if (gameManager.getPlayerTeam(player.getUniqueId()) == Teams.NONE){
