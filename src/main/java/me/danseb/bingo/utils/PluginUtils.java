@@ -3,11 +3,8 @@ package me.danseb.bingo.utils;
 import me.danseb.bingo.MainBingo;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
@@ -82,10 +79,10 @@ public class PluginUtils {
      */
     public static void sendActionBar(Player player, String message){
         if (MainBingo.getInstance().getServer().getVersion().contains("1.8")){
-            PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte)2);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+            PluginUtils1_8.actionBar1_8(player, message);
         } else {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
         }
     }
+
 }
