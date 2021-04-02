@@ -1,6 +1,7 @@
 package me.danseb.bingo.utils;
 
 import me.danseb.bingo.MainBingo;
+import me.danseb.bingo.NMS.NMS_v1_8;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -79,7 +80,7 @@ public class PluginUtils {
      */
     public static void sendActionBar(Player player, String message){
         if (MainBingo.getInstance().getServer().getVersion().contains("1.8")){
-            PluginUtils1_8.actionBar1_8(player, message);
+            NMS_v1_8.actionBar(player, message);
         } else {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
         }
